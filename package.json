@@ -24,6 +24,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "google-p12-pem": "0.0.1",
     "jws": "0.2.6",
     "mime": "1.2.11",
     "request": "2.47.0"
