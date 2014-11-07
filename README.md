@@ -60,6 +60,15 @@ gtoken.getToken(function(err, token) {
 });
 ```
 
+### Properties
+
+> Various properties set on the gtoken object after call to `.getToken()`.
+
+- `gtoken.token`: The access token.
+- `gtoken.expires_at`: The expiry date as milliseconds since 1970/01/01
+- `gtoken.key`: The raw key value.
+- `gtoken.raw_token`: Most recent raw token data received from Google.
+
 ### .hasExpired()
 
 > Returns true if the token has expired, or token does not exist.
@@ -71,15 +80,6 @@ gtoken.getToken(function(err, token) {
   }
 });
 ```
-
-### Properties
-
-> Various properties set on the gtoken object after call to `.getToken()`.
-
-- `gtoken.token`: The access token.
-- `gtoken.expires_at`: The expiry date as milliseconds since 1970/01/01
-- `gtoken.key`: The raw key value.
-- `gtoken.raw_token`: Most recent raw token data received from Google.
 
 ## Downloading your private `.p12` key from Google
 

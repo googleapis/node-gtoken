@@ -141,6 +141,7 @@ describe('gtoken', function() {
           }
         }
       })(TESTDATA);
+
       gtoken.getToken(noop);
     });
 
