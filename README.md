@@ -13,8 +13,8 @@ npm install gtoken
 ``` js
 var gtoken = require('gtoken')({
   email: 'my_service_account_email@developer.gserviceaccount.com',
-  scope: ['scope1 url', 'scope2 url'], // or space-delimited string of scopes
-  keyFile: 'path/to/key.pem' // or .p12 key file
+  scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
+  keyFile: 'path/to/key.pem' // or path to .p12 key file
 });
 
 gtoken.getToken(function(err, token) {
@@ -32,14 +32,14 @@ Another option is to pass the private key as a string:
 var key = '-----BEGIN RSA PRIVATE KEY-----\nXXXXXXXXXXX...';
 var gtoken = require('gtoken')({
   email: 'my_service_account_email@developer.gserviceaccount.com',
-  scope: ['scope1 url', 'scope2 url'], // or space-delimited string of scopes
+  scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
   key: key
 });
 ```
 
 ## Options
 
-> Various options that can be set when creating `gtoken` object.
+> Various options that can be set when creating initializing the `gtoken` object.
 
 - `options.email or options.iss`: The service account email address.
 - `options.scope`: An array of scope strings or space-delimited string of scopes.
@@ -49,7 +49,7 @@ var gtoken = require('gtoken')({
 
 ### .getToken(callback)
 
-> Returns the cached token or requests a new one.
+> Returns the cached token or requests a new one and returns it.
 
 ``` js
 gtoken.getToken(function(err, token) {
@@ -72,7 +72,7 @@ gtoken.getToken(function(err, token) {
 
 ### Properties
 
-> Various properties set on the gtoken object after `.getToken()`.
+> Various properties set on the gtoken object after call to `.getToken()`.
 
 - `gtoken.token`: The access token.
 - `gtoken.expires_at`: The expiry date as milliseconds since 1970/01/01
