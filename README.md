@@ -21,7 +21,7 @@ var gtoken = require('gtoken')({
 
 gtoken.getToken(function(err, token) {
   if (err) {
-    // handle error
+    console.log(err);
     return;
   }
   console.log(token);
