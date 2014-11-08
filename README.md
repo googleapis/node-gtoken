@@ -2,7 +2,7 @@
 
 Node.js Google Authentication Service Account Tokens
 
-[![Build Status](https://travis-ci.org/ryanseys/node-gtoken.svg?branch=travis)](https://travis-ci.org/ryanseys/node-gtoken)
+[![Build Status](https://travis-ci.org/ryanseys/node-gtoken.svg?branch=master)](https://travis-ci.org/ryanseys/node-gtoken)
 
 ## Installation
 
