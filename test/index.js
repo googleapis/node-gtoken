@@ -11,6 +11,7 @@ var SCOPES = [ SCOPE1, SCOPE2 ];
 var sandbox = require('sandboxed-module');
 
 var GOOGLE_TOKEN_URL = 'https://accounts.google.com/o/oauth2/token';
+var GOOGLE_REVOKE_TOKEN_URL = 'https://accounts.google.com/o/oauth2/revoke?token=';
 
 var TESTDATA = {
   email: 'email@developer.gserviceaccount.com',
@@ -114,14 +115,45 @@ describe('gtoken', function() {
     });
   });
 
-  describe('.getToken()', function() {
+  describe('.revokeToken()', function() {
     it('should exist', function() {
       var gtoken = require('../lib/index.js')();
+      assert.equal(typeof gtoken.revokeToken, 'function');
+    });
+
+
+    it('should run ._configure()', function(done) {
+      var gtoken = require('../lib/index.js')();
+      gtoken.token = 'woot';
+      gtoken._request = function(opts, cb) {
+        assert.equal(opts, GOOGLE_REVOKE_TOKEN_URL+'woot');
+        cb();
+      };
+      gtoken._configure = function(options) {
+        assert(options);
+      };
+      gtoken.revokeToken(done);
+    });
+
+    it('should return error when no token set', function(done) {
+      var gtoken = require('../lib/index.js')();
+      gtoken.token = null;
+      gtoken.revokeToken(function(err) {
+        assert(err && err.message);
+        done();
+      });
+    });
+  });
+
+  describe('.getToken()', function() {
+    it('should exist', function() {
+      var gtoken = GoogleToken();
       assert.equal(typeof gtoken.getToken, 'function');
     });
 
     it('should run jws.sign() with correct object', function(done) {
-      function sign(data) {
+      var gtoken = GoogleToken(TESTDATA);
+      gtoken._signJWT = function(data) {
         assert.deepEqual(data.header, {
           alg: 'RS256',
           typ: 'JWT'
@@ -132,58 +164,30 @@ describe('gtoken', function() {
         assert.equal(data.payload.aud, GOOGLE_TOKEN_URL);
         assert.equal(data.secret, 'abc123key');
         done();
-      }
-
-      var gtoken = sandbox.require('../lib/index.js', {
-        requires: {
-          'jws': {
-            sign: sign
-          }
-        }
-      })(TESTDATA);
+      };
 
       gtoken.getToken(noop);
     });
 
     it('should read .pem keyFile from file', function(done) {
-      function readFile(filename, callback) {
-        assert.equal(filename, KEYFILE);
-        callback();
-      }
+      var gtoken = GoogleToken(TESTDATA_KEYFILE);
 
-      var request = {
-        post: function(opts, callback) {
-          callback();
-        }
+      gtoken._signJWT = function(opts, cb) {
+        cb();
       };
 
-      var gtoken = sandbox.require('../lib/index.js', {
-        requires: {
-          'fs': {
-            readFile: readFile
-          },
-          'jws': {
-            sign: function() { return 'key'; }
-          },
-          request: request,
-          'mime': MIME
-        }
-      })(TESTDATA_KEYFILE);
-      gtoken.getToken(done);
+      gtoken._request = function(opts, cb) {
+        cb();
+      };
+
+      gtoken.getToken(function(err, token) {
+        assert.deepEqual(gtoken.key, KEYCONTENTS);
+        done();
+      });
     });
 
     it('should return cached token if not expired', function(done) {
-      var gtoken = sandbox.require('../lib/index.js', {
-        requires: {
-          'jws': {
-            sign: function() {
-              return 'key';
-            }
-          },
-          'mime': MIME
-        }
-      })(TESTDATA_KEYFILE);
-      gtoken.key = 'akey123';
+      var gtoken = GoogleToken(TESTDATA);
       gtoken.token = 'mytoken';
       gtoken.expires_at = new Date().getTime() + 10000;
       gtoken.getToken(function(err, token) {
@@ -193,16 +197,6 @@ describe('gtoken', function() {
     });
 
     it('should run mime.lookup if keyFile given', function(done) {
-      function readFile(filename, callback) {
-        callback();
-      }
-
-      var request = {
-        post: function(opts, callback) {
-          callback();
-        }
-      };
-
       var mime = {
         lookup: function(filename) {
           assert.equal(filename, KEYFILE);
@@ -212,16 +206,13 @@ describe('gtoken', function() {
 
       var gtoken = sandbox.require('../lib/index.js', {
         requires: {
-          'fs': {
-            readFile: readFile
-          },
-          'jws': {
-            sign: function() { return 'key'; }
-          },
-          request: request,
           'mime': mime
         }
       })(TESTDATA_KEYFILE);
+
+      gtoken._request = function(opts, callback) {
+        callback();
+      };
       gtoken.getToken(noop);
     });
 
@@ -238,40 +229,30 @@ describe('gtoken', function() {
       gtoken.getToken(noop);
     });
 
-    describe('request.post', function() {
+    describe('request', function() {
       it('should be run with correct options', function(done) {
-        function sign(data) {
-          return 'signedJWT123';
-        }
-
-        var request = {
-          post: function(options, callback) {
-            assert.deepEqual(options, {
-              url: GOOGLE_TOKEN_URL,
-              form: {
-                grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-                assertion: 'signedJWT123'
-              }
-            });
-            callback();
-          }
+        var gtoken = GoogleToken(TESTDATA);
+        gtoken._signJWT = function sign(opts, callback) {
+          callback(null, 'signedJWT123');
         };
 
-        var gtoken = sandbox.require('../lib/index.js', {
-          requires: {
-            'request': request,
-            'jws': {
-              'sign': sign
+        gtoken._request = function(options, callback) {
+          assert.deepEqual(options, {
+            method: 'post',
+            url: GOOGLE_TOKEN_URL,
+            form: {
+              grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+              assertion: 'signedJWT123'
             }
-          }
-        })(TESTDATA);
+          });
+          callback();
+        };
+
         gtoken.getToken(done);
       });
 
       it('should set and return correct properties on success', function(done) {
-        function sign(data) {
-          return 'signedJWT123';
-        }
+        var gtoken = GoogleToken(TESTDATA);
 
         var RESPBODY = JSON.stringify({
           access_token: 'accesstoken123',
@@ -279,38 +260,28 @@ describe('gtoken', function() {
           token_type: 'Bearer'
         });
 
-        var request = {
-          post: function(options, callback) {
-            callback(null, 'res', RESPBODY);
-          }
+        gtoken._request = function(options, callback) {
+          callback(null, 'res', RESPBODY);
         };
 
-        var gtoken = sandbox.require('../lib/index.js', {
-          requires: {
-            'request': request,
-            'jws': {
-              'sign': sign
-            }
-          }
-        })(TESTDATA);
+        gtoken._signJWT = function(opts, callback) {
+          callback(null, 'signedJWT123');
+        };
 
         gtoken.getToken(function(err, token) {
           assert.deepEqual(gtoken.raw_token, JSON.parse(RESPBODY));
           assert.equal(gtoken.token, 'accesstoken123');
           assert.equal(gtoken.token, token);
           assert.equal(err, null);
-          assert(gtoken.expires_at > (new Date()).getTime());
+          assert(gtoken.expires_at >= (new Date()).getTime());
           assert(gtoken.expires_at <= (new Date()).getTime() + (3600 * 1000));
           done();
         });
       });
 
       it('should set and return correct properties on error', function(done) {
-        function sign(data) {
-          return 'signedJWT123';
-        }
-
         var ERROR = new Error('An error occurred.');
+        var gtoken = GoogleToken(TESTDATA);
 
         var RESPBODY = JSON.stringify({
           access_token: 'accesstoken123',
@@ -318,20 +289,13 @@ describe('gtoken', function() {
           token_type: 'Bearer'
         });
 
-        var request = {
-          post: function(options, callback) {
-            callback(ERROR);
-          }
+        gtoken._request = function(options, callback) {
+          callback(ERROR);
         };
 
-        var gtoken = sandbox.require('../lib/index.js', {
-          requires: {
-            'request': request,
-            'jws': {
-              'sign': sign
-            }
-          }
-        })(TESTDATA);
+        gtoken._signJWT = function sign(opts, callback) {
+          callback(null, 'signedJWT123');
+        };
 
         gtoken.getToken(function(err, token) {
           assert.equal(gtoken.raw_token, null);
