@@ -13,7 +13,8 @@ npm install gtoken
 ## Usage
 
 ``` js
-var gtoken = require('gtoken')({
+var GoogleToken = require('gtoken');
+var gtoken = GoogleToken({
   email: 'my_service_account_email@developer.gserviceaccount.com',
   scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
   keyFile: 'path/to/key.pem' // or path to .p12 key file
@@ -32,7 +33,8 @@ Another option is to pass the private key as a string:
 
 ``` js
 var key = '-----BEGIN RSA PRIVATE KEY-----\nXXXXXXXXXXX...';
-var gtoken = require('gtoken')({
+var GoogleToken = require('gtoken');
+var gtoken = GoogleToken({
   email: 'my_service_account_email@developer.gserviceaccount.com',
   scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
   key: key
