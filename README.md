@@ -81,6 +81,20 @@ gtoken.getToken(function(err, token) {
 });
 ```
 
+### .revokeToken()
+
+> Revoke the token if set.
+
+``` js
+gtoken.revokeToken(function(err) {
+  if (err) {
+    console.log(err);
+    return;
+  }
+  console.log('Token revoked!');
+});
+```
+
 ## Downloading your private `.p12` key from Google
 
 1. Open the [Google Developer Console][gdevconsole].
