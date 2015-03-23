@@ -12,12 +12,14 @@ npm install gtoken
 
 ## Usage
 
+### Use with a `.pem` or `.p12` key file:
+
 ``` js
 var GoogleToken = require('gtoken');
 var gtoken = GoogleToken({
+  keyFile: 'path/to/key.pem', // or path to .p12 key file
   email: 'my_service_account_email@developer.gserviceaccount.com',
-  scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
-  keyFile: 'path/to/key.pem' // or path to .p12 key file
+  scope: ['https://scope1', 'https://scope2'] // or space-delimited string of scopes
 });
 
 gtoken.getToken(function(err, token) {
@@ -29,7 +31,25 @@ gtoken.getToken(function(err, token) {
 });
 ```
 
-Another option is to pass the private key as a string:
+### Use with a service account `.json` key file:
+
+``` js
+var GoogleToken = require('gtoken');
+var gtoken = GoogleToken({
+  keyFile: 'path/to/key.json',
+  scope: ['https://scope1', 'https://scope2'] // or space-delimited string of scopes
+});
+
+gtoken.getToken(function(err, token) {
+  if (err) {
+    console.log(err);
+    return;
+  }
+  console.log(token);
+});
+```
+
+### Pass the private key as a string directly:
 
 ``` js
 var key = '-----BEGIN RSA PRIVATE KEY-----\nXXXXXXXXXXX...';
@@ -48,7 +68,7 @@ var gtoken = GoogleToken({
 - `options.email or options.iss`: The service account email address.
 - `options.scope`: An array of scope strings or space-delimited string of scopes.
 - `options.sub`: The email address of the user requesting delegated access.
-- `options.keyFile`: The filename of `.pem` key or `.p12` key.
+- `options.keyFile`: The filename of `.json` key, `.pem` key or `.p12` key.
 - `options.key`: The raw RSA private key value, in place of using `options.keyFile`.
 
 ### .getToken(callback)

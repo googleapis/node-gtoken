@@ -4,10 +4,12 @@ var GoogleToken = require('../lib/index.js');
 var EMAIL = 'example@developer.gserviceaccount.com';
 var KEYFILE = './test/assets/key.pem';
 var P12FILE = './test/assets/key.p12';
+var KEYFILEJSON = './test/assets/key.json';
 var KEYCONTENTS = fs.readFileSync(KEYFILE);
+var KEYJSONCONTENTS = fs.readFileSync(KEYFILEJSON);
 var SCOPE1 = 'https://www.googleapis.com/auth/urlshortener';
 var SCOPE2 = 'https://www.googleapis.com/auth/drive';
-var SCOPES = [ SCOPE1, SCOPE2 ];
+var SCOPES = [SCOPE1, SCOPE2];
 var sandbox = require('sandboxed-module');
 
 var GOOGLE_TOKEN_URL = 'https://accounts.google.com/o/oauth2/token';
@@ -25,6 +27,11 @@ var TESTDATA_KEYFILE = {
   keyFile: KEYFILE
 };
 
+var TESTDATA_KEYFILEJSON = {
+  scope: 'scope123', // or space-delimited string of scopes
+  keyFile: KEYFILEJSON
+};
+
 var TESTDATA_P12 = {
   email: 'email@developer.gserviceaccount.com',
   scope: 'scope123', // or space-delimited string of scopes
@@ -33,15 +40,17 @@ var TESTDATA_P12 = {
 
 var MIME = {
   lookup: function(filename) {
-    if(filename === P12FILE) {
+    if (filename === P12FILE) {
       return 'application/x-pkcs12';
+    } else if (filename === KEYFILEJSON) {
+      return 'application/json';
     } else {
       return '';
     }
   }
 };
 
-var noop = function(){};
+var noop = function() {};
 
 describe('gtoken', function() {
   it('should exist', function() {
@@ -49,13 +58,13 @@ describe('gtoken', function() {
   });
 
   it('should work without new or options', function() {
-    var gtoken = require('../lib/index.js')();
+    var gtoken = GoogleToken();
     assert(gtoken);
   });
 
   describe('.iss', function() {
     it('should be set from email option', function() {
-      var gtoken = require('../lib/index.js')({
+      var gtoken = GoogleToken({
         email: EMAIL
       });
       assert.equal(gtoken.iss, EMAIL);
@@ -63,14 +72,14 @@ describe('gtoken', function() {
     });
 
     it('should be set from iss option', function() {
-      var gtoken = require('../lib/index.js')({
+      var gtoken = GoogleToken({
         iss: EMAIL
       });
       assert.equal(gtoken.iss, EMAIL);
     });
 
     it('should be set from email option over iss option', function() {
-      var gtoken = require('../lib/index.js')({
+      var gtoken = GoogleToken({
         iss: EMAIL,
         email: 'another' + EMAIL
       });
@@ -80,15 +89,15 @@ describe('gtoken', function() {
 
   describe('.scope', function() {
     it('should accept strings', function() {
-      var gtoken = require('../lib/index.js')({
+      var gtoken = GoogleToken({
         scope: 'hello world'
       });
       assert.equal(gtoken.scope, 'hello world');
     });
 
     it('should accept array of strings', function() {
-      var gtoken = require('../lib/index.js')({
-        scope: [ 'hello', 'world' ]
+      var gtoken = GoogleToken({
+        scope: ['hello', 'world']
       });
       assert.equal(gtoken.scope, 'hello world');
     });
@@ -96,12 +105,12 @@ describe('gtoken', function() {
 
   describe('.hasExpired()', function() {
     it('should exist', function() {
-      var gtoken = require('../lib/index.js')();
+      var gtoken = GoogleToken();
       assert.equal(typeof gtoken.hasExpired, 'function');
     });
 
     it('should detect expired tokens', function() {
-      var gtoken = require('../lib/index.js')();
+      var gtoken = GoogleToken();
       assert(gtoken.hasExpired(), 'should be expired without token');
       gtoken.token = 'hello';
       assert(gtoken.hasExpired(), 'should be expired without expires_at');
@@ -117,16 +126,16 @@ describe('gtoken', function() {
 
   describe('.revokeToken()', function() {
     it('should exist', function() {
-      var gtoken = require('../lib/index.js')();
+      var gtoken = GoogleToken();
       assert.equal(typeof gtoken.revokeToken, 'function');
     });
 
 
     it('should run ._configure()', function(done) {
-      var gtoken = require('../lib/index.js')();
+      var gtoken = GoogleToken();
       gtoken.token = 'woot';
       gtoken._request = function(opts, cb) {
-        assert.equal(opts, GOOGLE_REVOKE_TOKEN_URL+'woot');
+        assert.equal(opts, GOOGLE_REVOKE_TOKEN_URL + 'woot');
         cb();
       };
       gtoken._configure = function(options) {
@@ -136,7 +145,7 @@ describe('gtoken', function() {
     });
 
     it('should return error when no token set', function(done) {
-      var gtoken = require('../lib/index.js')();
+      var gtoken = GoogleToken();
       gtoken.token = null;
       gtoken.revokeToken(function(err) {
         assert(err && err.message);
@@ -171,6 +180,7 @@ describe('gtoken', function() {
 
     it('should read .pem keyFile from file', function(done) {
       var gtoken = GoogleToken(TESTDATA_KEYFILE);
+      gtoken._mime = MIME;
 
       gtoken._signJWT = function(opts, cb) {
         cb();
@@ -186,6 +196,26 @@ describe('gtoken', function() {
       });
     });
 
+    it('should read .json key from file', function(done) {
+      var gtoken = GoogleToken(TESTDATA_KEYFILEJSON);
+      gtoken._mime = MIME;
+
+      gtoken._signJWT = function(opts, cb) {
+        cb();
+      };
+
+      gtoken._request = function(opts, cb) {
+        cb();
+      };
+
+      gtoken.getToken(function(err, token) {
+        var parsed = JSON.parse(KEYJSONCONTENTS);
+        assert.deepEqual(gtoken.key, parsed.private_key);
+        assert.deepEqual(gtoken.iss, parsed.client_email);
+        done();
+      });
+    });
+
     it('should return cached token if not expired', function(done) {
       var gtoken = GoogleToken(TESTDATA);
       gtoken.token = 'mytoken';
@@ -197,35 +227,33 @@ describe('gtoken', function() {
     });
 
     it('should run mime.lookup if keyFile given', function(done) {
-      var mime = {
+      var gtoken = GoogleToken(TESTDATA_KEYFILE);
+
+      gtoken._mime = {
         lookup: function(filename) {
           assert.equal(filename, KEYFILE);
           done();
         }
       };
 
-      var gtoken = sandbox.require('../lib/index.js', {
-        requires: {
-          'mime': mime
-        }
-      })(TESTDATA_KEYFILE);
-
       gtoken._request = function(opts, callback) {
         callback();
       };
+
       gtoken.getToken(noop);
     });
 
     it('should run gp12pem if .p12 file is given', function(done) {
       var gtoken = sandbox.require('../lib/index.js', {
         requires: {
-          'mime': MIME,
           'google-p12-pem': function(filename, callback) {
             assert.equal(filename, P12FILE);
             done();
           }
         }
       })(TESTDATA_P12);
+
+      gtoken._mime = MIME;
       gtoken.getToken(noop);
     });
 
