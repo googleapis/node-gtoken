@@ -5,6 +5,7 @@ var EMAIL = 'example@developer.gserviceaccount.com';
 var KEYFILE = './test/assets/key.pem';
 var P12FILE = './test/assets/key.p12';
 var KEYFILEJSON = './test/assets/key.json';
+var KEYFILENOEMAILJSON = './test/assets/key-no-email.json';
 var KEYCONTENTS = fs.readFileSync(KEYFILE);
 var KEYJSONCONTENTS = fs.readFileSync(KEYFILEJSON);
 var SCOPE1 = 'https://www.googleapis.com/auth/urlshortener';
@@ -27,13 +28,28 @@ var TESTDATA_KEYFILE = {
   keyFile: KEYFILE
 };
 
+var TESTDATA_KEYFILENOEMAIL = {
+  scope: 'scope123', // or space-delimited string of scopes
+  keyFile: KEYFILE
+};
+
 var TESTDATA_KEYFILEJSON = {
   scope: 'scope123', // or space-delimited string of scopes
   keyFile: KEYFILEJSON
 };
 
+var TESTDATA_KEYFILENOEMAILJSON = {
+  scope: 'scope123', // or space-delimited string of scopes
+  keyFile: KEYFILENOEMAILJSON
+};
+
 var TESTDATA_P12 = {
   email: 'email@developer.gserviceaccount.com',
+  scope: 'scope123', // or space-delimited string of scopes
+  keyFile: P12FILE
+};
+
+var TESTDATA_P12_NO_EMAIL = {
   scope: 'scope123', // or space-delimited string of scopes
   keyFile: P12FILE
 };
@@ -196,6 +212,14 @@ describe('gtoken', function() {
       });
     });
 
+    it('should return error if iss is not set with .pem', function(done) {
+      var gtoken = GoogleToken(TESTDATA_KEYFILENOEMAIL);
+      gtoken.getToken(function(err) {
+        assert.strictEqual(err.code, 'MISSING_CREDENTIALS');
+        done();
+      });
+    });
+
     it('should read .json key from file', function(done) {
       var gtoken = GoogleToken(TESTDATA_KEYFILEJSON);
       gtoken._mime = MIME;
@@ -212,6 +236,14 @@ describe('gtoken', function() {
         var parsed = JSON.parse(KEYJSONCONTENTS);
         assert.deepEqual(gtoken.key, parsed.private_key);
         assert.deepEqual(gtoken.iss, parsed.client_email);
+        done();
+      });
+    });
+
+    it('should return error if iss is not set with .json', function(done) {
+      var gtoken = GoogleToken(TESTDATA_KEYFILENOEMAILJSON);
+      gtoken.getToken(function(err) {
+        assert.strictEqual(err.code, 'MISSING_CREDENTIALS');
         done();
       });
     });
@@ -255,6 +287,14 @@ describe('gtoken', function() {
 
       gtoken._mime = MIME;
       gtoken.getToken(noop);
+    });
+
+    it('should return error if iss is not set with .p12', function(done) {
+      var gtoken = GoogleToken(TESTDATA_P12_NO_EMAIL);
+      gtoken.getToken(function(err) {
+        assert.strictEqual(err.code, 'MISSING_CREDENTIALS');
+        done();
+      });
     });
 
     describe('request', function() {
