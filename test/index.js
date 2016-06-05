@@ -11,7 +11,6 @@ var KEYJSONCONTENTS = fs.readFileSync(KEYFILEJSON);
 var SCOPE1 = 'https://www.googleapis.com/auth/urlshortener';
 var SCOPE2 = 'https://www.googleapis.com/auth/drive';
 var SCOPES = [SCOPE1, SCOPE2];
-var sandbox = require('sandboxed-module');
 
 var GOOGLE_TOKEN_URL = 'https://accounts.google.com/o/oauth2/token';
 var GOOGLE_REVOKE_TOKEN_URL = 'https://accounts.google.com/o/oauth2/revoke?token=';
@@ -276,14 +275,12 @@ describe('gtoken', function() {
     });
 
     it('should run gp12pem if .p12 file is given', function(done) {
-      var gtoken = sandbox.require('../lib/index.js', {
-        requires: {
-          'google-p12-pem': function(filename, callback) {
-            assert.equal(filename, P12FILE);
-            done();
-          }
-        }
-      })(TESTDATA_P12);
+      var gtoken = GoogleToken(TESTDATA_P12);
+
+      gtoken._gp12pem = function(filename, callback) {
+        assert.equal(filename, P12FILE);
+        done();
+      };
 
       gtoken._mime = MIME;
       gtoken.getToken(noop);
