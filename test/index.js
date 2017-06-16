@@ -371,6 +371,30 @@ describe('gtoken', function() {
           done();
         });
       });
+
+      it('should include error_description from remote error', function(done) {
+        var gtoken = GoogleToken(TESTDATA);
+        var ERROR = 'error_name';
+        var DESCRIPTION = 'more detailed message';
+        var RESPBODY = JSON.stringify({
+          error: ERROR,
+          error_description: DESCRIPTION
+        });
+
+        gtoken._request = function(options, callback) {
+          callback(null, {}, RESPBODY);
+        };
+
+        gtoken._signJWT = function(opts, callback) {
+          callback(null, 'signedJWT123');
+        };
+
+        gtoken.getToken(function(err, token) {
+          assert(err instanceof Error);
+          assert.equal(err.message, ERROR + ': ' + DESCRIPTION);
+          done();
+        });
+      });
     });
   });
 });
