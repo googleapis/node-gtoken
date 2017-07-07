@@ -3,6 +3,8 @@
 Node.js Google Authentication Service Account Tokens
 
 [![Build Status](https://travis-ci.org/google/node-gtoken.svg?branch=master)](https://travis-ci.org/google/node-gtoken)
+[![dependencies Status](https://david-dm.org/google/node-gtoken/status.svg)](https://david-dm.org/google/node-gtoken)
+[![Known Vulnerabilities](https://snyk.io/test/npm/google-p12-pem/badge.svg)](https://snyk.io/test/npm/google-p12-pem)
 
 ## Installation
 
