@@ -27,7 +27,7 @@
     "google-p12-pem": "^0.1.0",
     "jws": "^3.0.0",
     "mime": "^1.2.11",
-    "request": "^2.72.0"
+    "phin": "^2.2.3"
   },
   "devDependencies": {
     "mocha": "^3.4.2"
