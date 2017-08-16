@@ -303,11 +303,14 @@ describe('gtoken', function() {
 
         gtoken._request = function(options, callback) {
           assert.deepEqual(options, {
-            method: 'post',
+            method: 'POST',
             url: GOOGLE_TOKEN_URL,
-            form: {
+            data: {
               grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
               assertion: 'signedJWT123'
+            },
+            "headers": {
+              "Content-Type": "application/x-www-form-urlencoded"
             }
           });
           callback();
@@ -326,7 +329,9 @@ describe('gtoken', function() {
         });
 
         gtoken._request = function(options, callback) {
-          callback(null, 'res', RESPBODY);
+          callback(null, {
+            body: RESPBODY
+          });
         };
 
         gtoken._signJWT = function(opts, callback) {
@@ -382,7 +387,9 @@ describe('gtoken', function() {
         });
 
         gtoken._request = function(options, callback) {
-          callback(null, {}, RESPBODY);
+          callback(null, {
+            body: RESPBODY
+          });
         };
 
         gtoken._signJWT = function(opts, callback) {
