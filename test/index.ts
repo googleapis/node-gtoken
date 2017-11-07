@@ -2,7 +2,6 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import * as mime from 'mime';
 import * as nock from 'nock';
-import * as request from 'request';
 
 import {GoogleToken} from '../src/lib/index';
 

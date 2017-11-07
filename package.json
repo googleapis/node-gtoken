@@ -33,17 +33,16 @@
   },
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.17.0",
     "google-p12-pem": "^0.1.0",
     "jws": "^3.0.0",
-    "mime": "^2.0.3",
-    "request": "^2.72.0"
+    "mime": "^2.0.3"
   },
   "devDependencies": {
     "@types/mime": "^2.0.0",
     "@types/mocha": "^2.2.43",
     "@types/nock": "^8.2.1",
     "@types/node": "^8.0.47",
-    "@types/request": "^2.0.6",
     "codecov": "^3.0.0",
     "gts": "^0.4.1",
     "mocha": "^4.0.1",
