@@ -6,6 +6,7 @@
 [![devDependency Status][david-dev-image]][david-dev-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![codecov][codecov-image]][codecov-url]
+[![Greenkeeper badge][greenkeeper-image]][greenkeeper-url]
 
 Node.js Google Authentication Service Account Tokens
 
@@ -165,3 +166,5 @@ There are a few breaking changes in version 2 of the API.
 [snyk-url]: https://snyk.io/test/github/google/node-gtoken
 [codecov-image]: https://codecov.io/gh/google/node-gtoken/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/google/node-gtoken
+[greenkeeper-image]: https://badges.greenkeeper.io/google/node-gtoken.svg
+[greenkeeper-url]: https://greenkeeper.io/
