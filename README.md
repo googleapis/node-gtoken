@@ -1,10 +1,13 @@
 # node-gtoken
 
-Node.js Google Authentication Service Account Tokens
+[![NPM Version][npm-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
+[![Dependency Status][david-image]][david-url]
+[![devDependency Status][david-dev-image]][david-dev-url]
+[![Known Vulnerabilities][snyk-image]][snyk-url]
+[![codecov][codecov-image]][codecov-url]
 
-[![Build Status](https://travis-ci.org/google/node-gtoken.svg?branch=master)](https://travis-ci.org/google/node-gtoken)
-[![dependencies Status](https://david-dm.org/google/node-gtoken/status.svg)](https://david-dm.org/google/node-gtoken)
-[![Known Vulnerabilities](https://snyk.io/test/npm/google-p12-pem/badge.svg)](https://snyk.io/test/npm/google-p12-pem)
+Node.js Google Authentication Service Account Tokens
 
 ## Installation
 
@@ -17,8 +20,8 @@ npm install gtoken
 ### Use with a `.pem` or `.p12` key file:
 
 ``` js
-var GoogleToken = require('gtoken');
-var gtoken = GoogleToken({
+const GoogleToken = require('gtoken');
+const gtoken = new GoogleToken({
   keyFile: 'path/to/key.pem', // or path to .p12 key file
   email: 'my_service_account_email@developer.gserviceaccount.com',
   scope: ['https://scope1', 'https://scope2'] // or space-delimited string of scopes
@@ -36,8 +39,8 @@ gtoken.getToken(function(err, token) {
 ### Use with a service account `.json` key file:
 
 ``` js
-var GoogleToken = require('gtoken');
-var gtoken = GoogleToken({
+const GoogleToken = require('gtoken');
+const gtoken = new GoogleToken({
   keyFile: 'path/to/key.json',
   scope: ['https://scope1', 'https://scope2'] // or space-delimited string of scopes
 });
@@ -54,9 +57,9 @@ gtoken.getToken(function(err, token) {
 ### Pass the private key as a string directly:
 
 ``` js
-var key = '-----BEGIN RSA PRIVATE KEY-----\nXXXXXXXXXXX...';
-var GoogleToken = require('gtoken');
-var gtoken = GoogleToken({
+const key = '-----BEGIN RSA PRIVATE KEY-----\nXXXXXXXXXXX...';
+const GoogleToken = require('gtoken');
+const gtoken = new GoogleToken({
   email: 'my_service_account_email@developer.gserviceaccount.com',
   scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
   key: key
@@ -89,9 +92,9 @@ gtoken.getToken(function(err, token) {
 > Various properties set on the gtoken object after call to `.getToken()`.
 
 - `gtoken.token`: The access token.
-- `gtoken.expires_at`: The expiry date as milliseconds since 1970/01/01
+- `gtoken.expiresAt`: The expiry date as milliseconds since 1970/01/01
 - `gtoken.key`: The raw key value.
-- `gtoken.raw_token`: Most recent raw token data received from Google.
+- `gtoken.rawToken`: Most recent raw token data received from Google.
 
 ### .hasExpired()
 
@@ -135,8 +138,30 @@ $ openssl pkcs12 -in key.p12 -nodes -nocerts > key.pem
 
 Don't forget, the passphrase when converting these files is the string `'notasecret'`
 
+## Changelog
+
+### 1.2.2 -> 2.0.0
+There are a few breaking changes in version 2 of the API.
+
+- `GoogleToken` is now a class type, and must be instantiated.
+- `GoogleToken.expires_at` renamed to `GoogleToken.expiresAt`
+- `GoogleToken.raw_token` renamed to `GoogleToken.rawToken`
+- `GoogleToken.token_expires` renamed to `GoogleToken.tokenExpires`
+
 ## License
 
-MIT
+[MIT](LICENSE)
 
 [gdevconsole]: https://console.developers.google.com
+[npm-image]: https://img.shields.io/npm/v/gtoken.svg
+[npm-url]: https://npmjs.org/package/gtoken
+[travis-image]: https://travis-ci.org/google/node-gtoken.svg?branch=master
+[travis-url]: https://travis-ci.org/google/node-gtoken
+[david-image]: https://david-dm.org/google/node-gtoken.svg
+[david-url]: https://david-dm.org/google/node-gtoken
+[david-dev-image]: https://david-dm.org/google/node-gtoken/dev-status.svg
+[david-dev-url]: https://david-dm.org/google/node-gtoken?type=dev
+[snyk-image]: https://snyk.io/test/github/google/node-gtoken/badge.svg
+[snyk-url]: https://snyk.io/test/github/google/node-gtoken
+[codecov-image]: https://codecov.io/gh/google/node-gtoken/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/google/node-gtoken
