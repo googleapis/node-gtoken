@@ -103,10 +103,11 @@ export class GoogleToken {
     };
 
     if (!this.hasExpired()) {
-      return callback(null, this.token);
+      process.nextTick(callback, null, this.token);
+      return;
     } else {
       if (!this.key && !this.keyFile) {
-        callback(new Error('No key or keyFile set.'));
+        process.nextTick(callback, new Error('No key or keyFile set.'));
         return;
       } else if (!this.key && this.keyFile) {
         const mimeType = mime.getType(this.keyFile);
@@ -118,7 +119,7 @@ export class GoogleToken {
           if (!this.iss) {
             const error = new Error('email is required.');
             (error as NodeJS.ErrnoException).code = 'MISSING_CREDENTIALS';
-            callback(error);
+            process.nextTick(callback, error);
             return;
           }
 
@@ -141,7 +142,7 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  public revokeToken(callback: (err?: Error) => void) {
+  public revokeToken(callback: (err?: Error) => void): void {
     if (this.token) {
       request(GOOGLE_REVOKE_TOKEN_URL + this.token, (err: Error) => {
         if (err) {
@@ -158,7 +159,7 @@ export class GoogleToken {
         callback();
       });
     } else {
-      callback(new Error('No token to revoke.'));
+      process.nextTick(callback, new Error('No token to revoke.'));
     }
   }
 
@@ -188,8 +189,8 @@ export class GoogleToken {
    *
    * @param  {Function} callback The callback function.
    */
-  private requestToken(
-      callback: (err: Error|null, token: string|null) => void) {
+  private requestToken(callback: (err: Error|null, token: string|null) => void):
+      void {
     const iat = Math.floor(new Date().getTime() / 1000);
     const payload = <Payload>{
       iss: this.iss,
@@ -209,64 +210,49 @@ export class GoogleToken {
       secret: this.key
     };
 
-    return this.signJWT(toSign, (err, signedJWT) => {
-      if (err) {
-        callback(err, null);
-        return;
-      }
-
-      return request(
-          {
-            method: 'post',
-            url: GOOGLE_TOKEN_URL,
-            form: {
-              grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-              assertion: signedJWT
-            }
-          },
-          (err2: Error, res: request.RequestResponse, body: any) => {
-            try {
-              body = JSON.parse(body);
-            } catch (e) {
-              body = {};
-            }
-
-            err2 = err2 ||
-                body.error &&
-                    new Error(
-                        body.error +
-                        (body.error_description ?
-                             ': ' + body.error_description :
-                             ''));
-
-            if (err2) {
-              this.token = null;
-              this.tokenExpires = null;
-              callback(err2, null);
-              return;
-            }
-
-            this.rawToken = body;
-            this.token = body.access_token;
-            this.expiresAt = (iat + body.expires_in) * 1000;
-            return callback(null, this.token);
-          });
-    });
-  }
-
-  /**
-   * Sign the JWT object, returning any errors in the callback.
-   *
-   * @param opts     The configuration object.
-   * @param callback The callback function.
-   */
-  private signJWT(
-      opts: any, callback: (err: Error|null, result?: string|null) => void) {
+    let signedJWT: string;
     try {
-      const signedJWT = jws.sign(opts);
-      return callback(null, signedJWT);
-    } catch (err) {
-      callback(err, null);
+      signedJWT = jws.sign(toSign);
+    } catch (e) {
+      process.nextTick(callback, e, null);
+      return;
     }
+
+    request(
+        {
+          method: 'post',
+          url: GOOGLE_TOKEN_URL,
+          form: {
+            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            assertion: signedJWT
+          }
+        },
+        (err2: Error, res: request.RequestResponse, body: any) => {
+          try {
+            body = JSON.parse(body);
+          } catch (e) {
+            body = {};
+          }
+
+          err2 = err2 ||
+              body.error &&
+                  new Error(
+                      body.error +
+                      (body.error_description ? ': ' + body.error_description :
+                                                ''));
+
+          if (err2) {
+            this.token = null;
+            this.tokenExpires = null;
+            callback(err2, null);
+            return;
+          }
+
+          this.rawToken = body;
+          this.token = body.access_token;
+          this.expiresAt = (iat + body.expires_in) * 1000;
+          return callback(null, this.token);
+        });
+    return;
   }
 }
