@@ -151,7 +151,7 @@ describe('gtoken', () => {
 
       nock(GOOGLE_REVOKE_TOKEN_URLS[0])
           .get(GOOGLE_REVOKE_TOKEN_URLS[1])
-          .query({token: token})
+          .query({token})
           .reply(200);
 
       const gtoken = new GoogleToken();
@@ -193,7 +193,7 @@ describe('gtoken', () => {
         assert(err);
         if (err) {
           assert.strictEqual(
-              (<NodeJS.ErrnoException>err).code, 'MISSING_CREDENTIALS');
+              (err as NodeJS.ErrnoException).code, 'MISSING_CREDENTIALS');
           done();
         }
       });
@@ -217,7 +217,7 @@ describe('gtoken', () => {
         assert(err);
         if (err) {
           assert.strictEqual(
-              (<NodeJS.ErrnoException>err).code, 'MISSING_CREDENTIALS');
+              (err as NodeJS.ErrnoException).code, 'MISSING_CREDENTIALS');
           done();
         }
       });
@@ -248,7 +248,7 @@ describe('gtoken', () => {
         assert(err);
         if (err) {
           assert.strictEqual(
-              (<NodeJS.ErrnoException>err).code, 'MISSING_CREDENTIALS');
+              (err as NodeJS.ErrnoException).code, 'MISSING_CREDENTIALS');
           done();
         }
       });
@@ -326,7 +326,7 @@ describe('gtoken', () => {
   });
 });
 
-function createMock(code = 200, body?: any) {
+function createMock(code = 200, body?: {}) {
   nock(GOOGLE_TOKEN_URLS[0])
       .post(GOOGLE_TOKEN_URLS[1], {
         grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',

@@ -11,7 +11,7 @@ const GOOGLE_REVOKE_TOKEN_URL =
 
 interface Payload {
   iss: string;
-  scope: string|Array<string>;
+  scope: string|string[];
   aud: string;
   exp: number;
   iat: number;
@@ -24,20 +24,20 @@ export interface TokenOptions {
   email?: string|undefined;
   iss?: string;
   sub?: string;
-  scope?: string|Array<string>;
+  scope?: string|string[];
 }
 
 export class GoogleToken {
-  public token: string|null;
-  public expiresAt: number|null;
-  public key: string|undefined;
-  public keyFile: string|undefined;
-  public iss: string|undefined;
-  public sub: string;
-  public scope: string|undefined;
-  public rawToken: string|null;
-  public tokenExpires: number|null;
-  public email: string;
+  token: string|null;
+  expiresAt: number|null;
+  key: string|undefined;
+  keyFile: string|undefined;
+  iss: string|undefined;
+  sub: string;
+  scope: string|undefined;
+  rawToken: string|null;
+  tokenExpires: number|null;
+  email: string;
 
   /**
    * Create a GoogleToken.
@@ -53,7 +53,7 @@ export class GoogleToken {
    *
    * @return true if the token has expired, false otherwise.
    */
-  public hasExpired() {
+  hasExpired() {
     const now = (new Date()).getTime();
     if (this.token && this.expiresAt) {
       return now >= this.expiresAt;
@@ -67,8 +67,7 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  public getToken(callback: (err: Error|null, token?: string|null) => void):
-      void {
+  getToken(callback: (err: Error|null, token?: string|null) => void): void {
     const handleJSONKey = (err: Error, key: string) => {
       if (err) {
         callback(err);
@@ -142,7 +141,7 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  public revokeToken(callback: (err?: Error) => void): void {
+  revokeToken(callback: (err?: Error) => void): void {
     if (this.token) {
       request(GOOGLE_REVOKE_TOKEN_URL + this.token, (err: Error) => {
         if (err) {
@@ -192,13 +191,13 @@ export class GoogleToken {
   private requestToken(callback: (err: Error|null, token: string|null) => void):
       void {
     const iat = Math.floor(new Date().getTime() / 1000);
-    const payload = <Payload>{
+    const payload = {
       iss: this.iss,
       scope: this.scope,
       aud: GOOGLE_TOKEN_URL,
       exp: iat + 3600,  // 3600 seconds = 1 hour
-      iat: iat,
-    };
+      iat,
+    } as Payload;
 
     if (this.sub) {
       payload.sub = this.sub;
@@ -206,7 +205,7 @@ export class GoogleToken {
 
     const toSign = {
       header: {alg: 'RS256', typ: 'JWT'},
-      payload: payload,
+      payload,
       secret: this.key
     };
 
@@ -227,7 +226,7 @@ export class GoogleToken {
             assertion: signedJWT
           }
         },
-        (err2: Error, res: request.RequestResponse, body: any) => {
+        (err2, res, body) => {
           try {
             body = JSON.parse(body);
           } catch (e) {
