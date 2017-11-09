@@ -231,7 +231,7 @@ export class GoogleToken {
         .catch(e => {
           this.token = null;
           this.tokenExpires = null;
-          const body = e.response.data;
+          const body = (e.response && e.response.data) ? e.response.data : {};
           let err = e;
           if (body.error) {
             const desc =

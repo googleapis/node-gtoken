@@ -147,16 +147,22 @@ describe('gtoken', () => {
 
     it('should run accept config properties', done => {
       const token = 'w00t';
-
-      nock(GOOGLE_REVOKE_TOKEN_URLS[0])
-          .get(GOOGLE_REVOKE_TOKEN_URLS[1])
-          .query({token: token})
-          .reply(200);
-
+      createRevokeMock(token);
       const gtoken = new GoogleToken();
       gtoken.token = token;
       gtoken.revokeToken(err => {
         assert.equal(gtoken.token, null);
+        done();
+      });
+    });
+
+    it('should return appropriate error with HTTP 404s', done => {
+      const token = 'w00t';
+      createRevokeMock(token, 404);
+      const gtoken = new GoogleToken();
+      gtoken.token = token;
+      gtoken.revokeToken(err => {
+        assert(err);
         done();
       });
     });
@@ -321,6 +327,18 @@ describe('gtoken', () => {
           }
         });
       });
+
+      it('should provide an appropriate error for a 404', done => {
+        const gtoken = new GoogleToken(TESTDATA);
+        const message = 'Request failed with status code 404';
+        createMock(404);
+        gtoken.getToken((err, token) => {
+          assert(err instanceof Error);
+          if (err) assert.equal(err.message, message);
+          done();
+        });
+      });
+
     });
   });
 });
@@ -332,4 +350,11 @@ function createMock(code = 200, body?: any) {
         assertion: /.?/
       })
       .reply(code, body);
+}
+
+function createRevokeMock(token: string, code = 200) {
+  nock(GOOGLE_REVOKE_TOKEN_URLS[0])
+      .get(GOOGLE_REVOKE_TOKEN_URLS[1])
+      .query({token: token})
+      .reply(code);
 }
