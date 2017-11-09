@@ -1,6 +1,6 @@
+import axios from 'axios';
 import * as fs from 'fs';
 import * as mime from 'mime';
-import * as request from 'request';
 
 const gp12pem = require('google-p12-pem');
 const jws = require('jws');
@@ -143,24 +143,22 @@ export class GoogleToken {
    * @param callback The callback function.
    */
   public revokeToken(callback: (err?: Error) => void): void {
-    if (this.token) {
-      request(GOOGLE_REVOKE_TOKEN_URL + this.token, (err: Error) => {
-        if (err) {
-          callback(err);
-          return;
-        }
-        this.configure({
-          email: this.iss,
-          sub: this.sub,
-          key: this.key,
-          keyFile: this.keyFile,
-          scope: this.scope
-        });
-        callback();
-      });
-    } else {
+    if (!this.token) {
       setImmediate(callback, new Error('No token to revoke.'));
+      return;
     }
+    axios.get(GOOGLE_REVOKE_TOKEN_URL + this.token)
+        .then(r => {
+          this.configure({
+            email: this.iss,
+            sub: this.sub,
+            key: this.key,
+            keyFile: this.keyFile,
+            scope: this.scope
+          });
+          callback();
+        })
+        .catch(callback);
   }
 
   /**
@@ -218,41 +216,30 @@ export class GoogleToken {
       return;
     }
 
-    request(
-        {
-          method: 'post',
-          url: GOOGLE_TOKEN_URL,
-          form: {
-            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            assertion: signedJWT
-          }
-        },
-        (err2: Error, res: request.RequestResponse, body: any) => {
-          try {
-            body = JSON.parse(body);
-          } catch (e) {
-            body = {};
-          }
-
-          err2 = err2 ||
-              body.error &&
-                  new Error(
-                      body.error +
-                      (body.error_description ? ': ' + body.error_description :
-                                                ''));
-
-          if (err2) {
-            this.token = null;
-            this.tokenExpires = null;
-            callback(err2, null);
-            return;
-          }
-
+    axios
+        .post(GOOGLE_TOKEN_URL, {
+          grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+          assertion: signedJWT
+        })
+        .then(r => {
+          const body = r.data;
           this.rawToken = body;
           this.token = body.access_token;
           this.expiresAt = (iat + body.expires_in) * 1000;
           return callback(null, this.token);
+        })
+        .catch(e => {
+          this.token = null;
+          this.tokenExpires = null;
+          const body = (e.response && e.response.data) ? e.response.data : {};
+          let err = e;
+          if (body.error) {
+            const desc =
+                body.error_description ? `: ${body.error_description}` : '';
+            err = new Error(`${body.error}${desc}`);
+          }
+          callback(err, null);
+          return;
         });
-    return;
   }
 }
