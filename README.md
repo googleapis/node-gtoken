@@ -37,6 +37,23 @@ gtoken.getToken(function(err, token) {
 });
 ```
 
+You can also use the async/await style API:
+
+``` js
+const token = await gtoken.getToken()
+console.log(token);
+```
+
+Or use promises:
+
+```js
+gtoken.getToken()
+  .then(token => {
+    console.log(`Token: ${token}`)
+  })
+  .catch(e => console.error);
+```
+
 ### Use with a service account `.json` key file:
 
 ``` js
@@ -142,8 +159,10 @@ Don't forget, the passphrase when converting these files is the string `'notasec
 ## Changelog
 
 ### 1.2.2 -> 2.0.0
-There are a few breaking changes in version 2 of the API.
+New features:
+- API now supports callback and promise based workflows
 
+Breaking changes:
 - `GoogleToken` is now a class type, and must be instantiated.
 - `GoogleToken.expires_at` renamed to `GoogleToken.expiresAt`
 - `GoogleToken.raw_token` renamed to `GoogleToken.rawToken`

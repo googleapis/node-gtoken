@@ -144,7 +144,6 @@ describe('gtoken', () => {
       assert.equal(typeof gtoken.revokeToken, 'function');
     });
 
-
     it('should run accept config properties', done => {
       const token = 'w00t';
       createRevokeMock(token);
@@ -167,6 +166,16 @@ describe('gtoken', () => {
       });
     });
 
+    it('should run accept config properties with async', async () => {
+      const token = 'w00t';
+      createRevokeMock(token);
+
+      const gtoken = new GoogleToken();
+      gtoken.token = token;
+      await gtoken.revokeToken();
+      assert.equal(gtoken.token, null);
+    });
+
     it('should return error when no token set', done => {
       const gtoken = new GoogleToken();
       gtoken.token = null;
@@ -174,6 +183,18 @@ describe('gtoken', () => {
         assert(err && err.message);
         done();
       });
+    });
+
+    it('should return error when no token set with async', async () => {
+      const gtoken = new GoogleToken();
+      gtoken.token = null;
+      let err;
+      try {
+        await gtoken.revokeToken();
+      } catch (e) {
+        err = e;
+      }
+      assert(err && err.message);
     });
   });
 
@@ -185,11 +206,18 @@ describe('gtoken', () => {
 
     it('should read .pem keyFile from file', done => {
       const gtoken = new GoogleToken(TESTDATA_KEYFILE);
-      createMock();
+      createGetTokenMock();
       gtoken.getToken((err, token) => {
         assert.deepEqual(gtoken.key, KEYCONTENTS);
         done();
       });
+    });
+
+    it('should read .pem keyFile from file async', async () => {
+      const gtoken = new GoogleToken(TESTDATA_KEYFILE);
+      createGetTokenMock();
+      const token = await gtoken.getToken();
+      assert.deepEqual(gtoken.key, KEYCONTENTS);
     });
 
     it('should return error if iss is not set with .pem', done => {
@@ -198,15 +226,23 @@ describe('gtoken', () => {
         assert(err);
         if (err) {
           assert.strictEqual(
-              (<NodeJS.ErrnoException>err).code, 'MISSING_CREDENTIALS');
+              (err as NodeJS.ErrnoException).code, 'MISSING_CREDENTIALS');
           done();
         }
       });
     });
 
+    it('should return err if neither key nor keyfile are set', done => {
+      const gtoken = new GoogleToken();
+      gtoken.getToken((err, token) => {
+        assert(err);
+        done();
+      });
+    });
+
     it('should read .json key from file', done => {
       const gtoken = new GoogleToken(TESTDATA_KEYFILEJSON);
-      createMock();
+      createGetTokenMock();
       gtoken.getToken((err, token) => {
         assert.equal(err, null);
         const parsed = JSON.parse(KEYJSONCONTENTS);
@@ -222,7 +258,7 @@ describe('gtoken', () => {
         assert(err);
         if (err) {
           assert.strictEqual(
-              (<NodeJS.ErrnoException>err).code, 'MISSING_CREDENTIALS');
+              (err as NodeJS.ErrnoException).code, 'MISSING_CREDENTIALS');
           done();
         }
       });
@@ -240,7 +276,7 @@ describe('gtoken', () => {
 
     it('should run gp12pem if .p12 file is given', done => {
       const gtoken = new GoogleToken(TESTDATA_P12);
-      createMock();
+      createGetTokenMock();
       gtoken.getToken((err, token) => {
         assert.equal(err, null);
         done();
@@ -253,7 +289,7 @@ describe('gtoken', () => {
         assert(err);
         if (err) {
           assert.strictEqual(
-              (<NodeJS.ErrnoException>err).code, 'MISSING_CREDENTIALS');
+              (err as NodeJS.ErrnoException).code, 'MISSING_CREDENTIALS');
           done();
         }
       });
@@ -263,7 +299,7 @@ describe('gtoken', () => {
       it('should be run with correct options', done => {
         const gtoken = new GoogleToken(TESTDATA);
         const fakeToken = 'nodeftw';
-        createMock(200, {'access_token': fakeToken});
+        createGetTokenMock(200, {'access_token': fakeToken});
         gtoken.getToken((err, token) => {
           assert.equal(err, null);
           assert.equal(token, fakeToken);
@@ -279,7 +315,7 @@ describe('gtoken', () => {
           expires_in: 3600,
           token_type: 'Bearer'
         };
-        createMock(200, RESPBODY);
+        createGetTokenMock(200, RESPBODY);
         gtoken.getToken((err, token) => {
           assert.deepEqual(gtoken.rawToken, RESPBODY);
           assert.equal(gtoken.token, 'accesstoken123');
@@ -298,7 +334,7 @@ describe('gtoken', () => {
         const ERROR = 'An error occurred.';
         const gtoken = new GoogleToken(TESTDATA);
 
-        createMock(500, {error: ERROR});
+        createGetTokenMock(500, {error: ERROR});
 
         gtoken.getToken((err, token) => {
           assert(err);
@@ -317,7 +353,7 @@ describe('gtoken', () => {
         const DESCRIPTION = 'more detailed message';
         const RESPBODY = {error: ERROR, error_description: DESCRIPTION};
 
-        createMock(500, RESPBODY);
+        createGetTokenMock(500, RESPBODY);
 
         gtoken.getToken((err, token) => {
           assert(err instanceof Error);
@@ -331,7 +367,7 @@ describe('gtoken', () => {
       it('should provide an appropriate error for a 404', done => {
         const gtoken = new GoogleToken(TESTDATA);
         const message = 'Request failed with status code 404';
-        createMock(404);
+        createGetTokenMock(404);
         gtoken.getToken((err, token) => {
           assert(err instanceof Error);
           if (err) assert.equal(err.message, message);
@@ -343,7 +379,7 @@ describe('gtoken', () => {
   });
 });
 
-function createMock(code = 200, body?: any) {
+function createGetTokenMock(code = 200, body?: {}) {
   nock(GOOGLE_TOKEN_URLS[0])
       .post(GOOGLE_TOKEN_URLS[1], {
         grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
@@ -355,6 +391,6 @@ function createMock(code = 200, body?: any) {
 function createRevokeMock(token: string, code = 200) {
   nock(GOOGLE_REVOKE_TOKEN_URLS[0])
       .get(GOOGLE_REVOKE_TOKEN_URLS[1])
-      .query({token: token})
+      .query({token})
       .reply(code);
 }

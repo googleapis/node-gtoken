@@ -14,7 +14,7 @@
     "codecov": "mkdir -p .nyc_output && nyc report --reporter=lcov | codecov",
     "fix": "gts fix",
     "compile": "tsc -p .",
-    "test": "mocha build/test --timeout 5000 --require source-map-support/register",
+    "test": "nyc mocha build/test --timeout 5000 --require source-map-support/register",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run check"
@@ -33,10 +33,12 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@types/pify": "^3.0.0",
     "axios": "^0.17.0",
     "google-p12-pem": "^0.1.0",
     "jws": "^3.0.0",
-    "mime": "^2.0.3"
+    "mime": "^2.0.3",
+    "pify": "^3.0.0"
   },
   "devDependencies": {
     "@types/mime": "^2.0.0",
@@ -44,7 +46,7 @@
     "@types/nock": "^8.2.1",
     "@types/node": "^8.0.47",
     "codecov": "^3.0.0",
-    "gts": "^0.4.1",
+    "gts": "^0.5.1",
     "mocha": "^4.0.1",
     "nock": "^9.0.27",
     "nyc": "^11.2.1",

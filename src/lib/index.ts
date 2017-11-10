@@ -1,9 +1,13 @@
 import axios from 'axios';
 import * as fs from 'fs';
 import * as mime from 'mime';
+import * as pify from 'pify';
 
 const gp12pem = require('google-p12-pem');
 const jws = require('jws');
+
+const readFile = pify(fs.readFile);
+const toPem = pify(gp12pem);
 
 const GOOGLE_TOKEN_URL = 'https://accounts.google.com/o/oauth2/token';
 const GOOGLE_REVOKE_TOKEN_URL =
@@ -11,7 +15,7 @@ const GOOGLE_REVOKE_TOKEN_URL =
 
 interface Payload {
   iss: string;
-  scope: string|Array<string>;
+  scope: string|string[];
   aud: string;
   exp: number;
   iat: number;
@@ -24,20 +28,20 @@ export interface TokenOptions {
   email?: string|undefined;
   iss?: string;
   sub?: string;
-  scope?: string|Array<string>;
+  scope?: string|string[];
 }
 
 export class GoogleToken {
-  public token: string|null;
-  public expiresAt: number|null;
-  public key: string|undefined;
-  public keyFile: string|undefined;
-  public iss: string|undefined;
-  public sub: string;
-  public scope: string|undefined;
-  public rawToken: string|null;
-  public tokenExpires: number|null;
-  public email: string;
+  token: string|null;
+  expiresAt: number|null;
+  key: string|undefined;
+  keyFile: string|undefined;
+  iss: string|undefined;
+  sub: string;
+  scope: string|undefined;
+  rawToken: string|null;
+  tokenExpires: number|null;
+  email: string;
 
   /**
    * Create a GoogleToken.
@@ -53,7 +57,7 @@ export class GoogleToken {
    *
    * @return true if the token has expired, false otherwise.
    */
-  public hasExpired() {
+  hasExpired() {
     const now = (new Date()).getTime();
     if (this.token && this.expiresAt) {
       return now >= this.expiresAt;
@@ -67,74 +71,63 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  public getToken(callback: (err: Error|null, token?: string|null) => void):
-      void {
-    const handleJSONKey = (err: Error, key: string) => {
-      if (err) {
-        callback(err);
-        return;
-      }
-      try {
+  getToken(): Promise<string|null>;
+  getToken(callback: (err: Error|null, token?: string|null) => void): void;
+  getToken(callback?: (err: Error|null, token?: string|null) => void):
+      void|Promise<string|null> {
+    if (callback) {
+      this.getTokenAsync()
+          .then(t => {
+            callback(null, t);
+          })
+          .catch(callback);
+      return;
+    }
+    return this.getTokenAsync();
+  }
+
+  private async getTokenAsync() {
+    if (!this.hasExpired()) {
+      return Promise.resolve(this.token);
+    }
+
+    if (!this.key && !this.keyFile) {
+      throw new Error('No key or keyFile set.');
+    }
+
+    if (!this.key && this.keyFile) {
+      const mimeType = mime.getType(this.keyFile);
+      if (mimeType === 'application/json') {
+        // json file
+        const key = await readFile(this.keyFile, 'utf8');
         const body = JSON.parse(key);
         this.key = body.private_key;
         this.iss = body.client_email;
-      } catch (e) {
-        callback(e);
-        return;
-      }
-
-      if (!this.key || !this.iss) {
-        const error = new Error('private_key and client_email are required.');
-        (error as NodeJS.ErrnoException).code = 'MISSING_CREDENTIALS';
-        callback(error);
-        return;
-      }
-
-      this.requestToken(callback);
-    };
-
-    const handleKey = (err: Error, key: string) => {
-      if (err) {
-        callback(err);
-        return;
-      }
-      this.key = key;
-      this.requestToken(callback);
-    };
-
-    if (!this.hasExpired()) {
-      setImmediate(callback, null, this.token);
-      return;
-    } else {
-      if (!this.key && !this.keyFile) {
-        setImmediate(callback, new Error('No key or keyFile set.'));
-        return;
-      } else if (!this.key && this.keyFile) {
-        const mimeType = mime.getType(this.keyFile);
-        if (mimeType === 'application/json') {
-          // json file
-          fs.readFile(this.keyFile, 'utf8', handleJSONKey);
-        } else {
-          // Must be a .p12 file or .pem key
-          if (!this.iss) {
-            const error = new Error('email is required.');
-            (error as NodeJS.ErrnoException).code = 'MISSING_CREDENTIALS';
-            setImmediate(callback, error);
-            return;
-          }
-
-          if (mimeType === 'application/x-pkcs12') {
-            // convert to .pem on the fly
-            gp12pem(this.keyFile, handleKey);
-          } else {
-            // assume .pem key otherwise
-            fs.readFile(this.keyFile, 'utf8', handleKey);
-          }
+        if (!this.key || !this.iss) {
+          const e = new Error('private_key and client_email are required.');
+          (e as NodeJS.ErrnoException).code = 'MISSING_CREDENTIALS';
+          throw e;
         }
       } else {
-        return this.requestToken(callback);
+        // Must be a .p12 file or .pem key
+        if (!this.iss) {
+          const e = new Error('email is required.');
+          (e as NodeJS.ErrnoException).code = 'MISSING_CREDENTIALS';
+          throw e;
+        }
+
+        if (mimeType === 'application/x-pkcs12') {
+          // convert to .pem on the fly
+          const key = await toPem(this.keyFile);
+          this.key = key;
+        } else {
+          // assume .pem key otherwise
+          const key = await readFile(this.keyFile, 'utf8');
+          this.key = key;
+        }
       }
     }
+    return this.requestToken();
   }
 
   /**
@@ -142,24 +135,31 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  public revokeToken(callback: (err?: Error) => void): void {
-    if (!this.token) {
-      setImmediate(callback, new Error('No token to revoke.'));
+  revokeToken(): Promise<void>;
+  revokeToken(callback: (err?: Error) => void): void;
+  revokeToken(callback?: (err?: Error) => void): void|Promise<void> {
+    if (callback) {
+      this.revokeTokenAsync().then(() => callback()).catch(callback);
       return;
     }
-    axios.get(GOOGLE_REVOKE_TOKEN_URL + this.token)
-        .then(r => {
-          this.configure({
-            email: this.iss,
-            sub: this.sub,
-            key: this.key,
-            keyFile: this.keyFile,
-            scope: this.scope
-          });
-          callback();
-        })
-        .catch(callback);
+    return this.revokeTokenAsync();
   }
+
+  private async revokeTokenAsync() {
+    if (!this.token) {
+      throw new Error('No token to revoke.');
+    }
+    return axios.get(GOOGLE_REVOKE_TOKEN_URL + this.token).then(r => {
+      this.configure({
+        email: this.iss,
+        sub: this.sub,
+        key: this.key,
+        keyFile: this.keyFile,
+        scope: this.scope
+      });
+    });
+  }
+
 
   /**
    * Configure the GoogleToken for re-use.
@@ -187,16 +187,15 @@ export class GoogleToken {
    *
    * @param  {Function} callback The callback function.
    */
-  private requestToken(callback: (err: Error|null, token: string|null) => void):
-      void {
+  private async requestToken() {
     const iat = Math.floor(new Date().getTime() / 1000);
-    const payload = <Payload>{
+    const payload = {
       iss: this.iss,
       scope: this.scope,
       aud: GOOGLE_TOKEN_URL,
       exp: iat + 3600,  // 3600 seconds = 1 hour
-      iat: iat,
-    };
+      iat,
+    } as Payload;
 
     if (this.sub) {
       payload.sub = this.sub;
@@ -204,19 +203,13 @@ export class GoogleToken {
 
     const toSign = {
       header: {alg: 'RS256', typ: 'JWT'},
-      payload: payload,
+      payload,
       secret: this.key
     };
 
-    let signedJWT: string;
-    try {
-      signedJWT = jws.sign(toSign);
-    } catch (e) {
-      setImmediate(callback, e, null);
-      return;
-    }
+    const signedJWT = jws.sign(toSign);
 
-    axios
+    return axios
         .post(GOOGLE_TOKEN_URL, {
           grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
           assertion: signedJWT
@@ -226,7 +219,7 @@ export class GoogleToken {
           this.rawToken = body;
           this.token = body.access_token;
           this.expiresAt = (iat + body.expires_in) * 1000;
-          return callback(null, this.token);
+          return this.token;
         })
         .catch(e => {
           this.token = null;
@@ -238,8 +231,7 @@ export class GoogleToken {
                 body.error_description ? `: ${body.error_description}` : '';
             err = new Error(`${body.error}${desc}`);
           }
-          callback(err, null);
-          return;
+          throw err;
         });
   }
 }
