@@ -6,6 +6,7 @@ import * as nock from 'nock';
 import {GoogleToken} from '../src/lib/index';
 
 const EMAIL = 'example@developer.gserviceaccount.com';
+const UNKNOWN_KEYFILE = './test/assets/key';
 const KEYFILE = './test/assets/key.pem';
 const P12FILE = './test/assets/key.p12';
 const KEYFILEJSON = './test/assets/key.json';
@@ -28,8 +29,13 @@ const TESTDATA = {
 
 const TESTDATA_KEYFILE = {
   email: 'email@developer.gserviceaccount.com',
+  sub: 'developer@gmail.com',
   scope: 'scope123',  // or space-delimited string of scopes
   keyFile: KEYFILE
+};
+
+const TESTDATA_UNKNOWN = {
+  keyFile: UNKNOWN_KEYFILE
 };
 
 const TESTDATA_KEYFILENOEMAIL = {
@@ -58,23 +64,6 @@ const TESTDATA_P12_NO_EMAIL = {
   keyFile: P12FILE
 };
 
-const MIME = {
-  getType: (filename: string) => {
-    if (filename === P12FILE) {
-      return 'application/x-pkcs12';
-    } else if (filename === KEYFILEJSON) {
-      return 'application/json';
-    } else {
-      return '';
-    }
-  },
-  getExtension: (filename: string) => {
-    return null;
-  },
-  define: (mimes: mime.TypeMap, force?: boolean) => null,
-  default_type: 'null'
-};
-
 const noop = () => undefined;
 
 describe('gtoken', () => {
@@ -97,6 +86,11 @@ describe('gtoken', () => {
     it('should be set from iss option', () => {
       const gtoken = new GoogleToken({iss: EMAIL});
       assert.equal(gtoken.iss, EMAIL);
+    });
+
+    it('should be set from sub option', () => {
+      const gtoken = new GoogleToken({sub: EMAIL});
+      assert.equal(gtoken.sub, EMAIL);
     });
 
     it('should be set from email option over iss option', () => {
@@ -290,6 +284,18 @@ describe('gtoken', () => {
         if (err) {
           assert.strictEqual(
               (err as NodeJS.ErrnoException).code, 'MISSING_CREDENTIALS');
+          done();
+        }
+      });
+    });
+
+    it('should return error if unknown file type is used', done => {
+      const gtoken = new GoogleToken(TESTDATA_UNKNOWN);
+      gtoken.getToken(err => {
+        assert(err);
+        if (err) {
+          assert.strictEqual(
+              (err as NodeJS.ErrnoException).code, 'UNKNOWN_CERTIFICATE_TYPE');
           done();
         }
       });
