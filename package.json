@@ -11,7 +11,7 @@
   "scripts": {
     "check": "gts check",
     "clean": "gts clean",
-    "codecov": "mkdir -p .nyc_output && nyc report --reporter=lcov | codecov",
+    "codecov": "nyc report --reporter=json && codecov -f coverage/*.json",
     "fix": "gts fix",
     "compile": "tsc -p .",
     "test": "nyc mocha build/test --timeout 5000 --require source-map-support/register",
