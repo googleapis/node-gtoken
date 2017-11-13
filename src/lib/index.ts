@@ -31,6 +31,12 @@ export interface TokenOptions {
   scope?: string|string[];
 }
 
+class ErrorWithCode extends Error {
+  constructor(message: string, public code: string) {
+    super(message);
+  }
+}
+
 export class GoogleToken {
   token: string|null;
   expiresAt: number|null;
@@ -97,37 +103,45 @@ export class GoogleToken {
 
     if (!this.key && this.keyFile) {
       const mimeType = mime.getType(this.keyFile);
-      if (mimeType === 'application/json') {
-        // json file
-        const key = await readFile(this.keyFile, 'utf8');
-        const body = JSON.parse(key);
-        this.key = body.private_key;
-        this.iss = body.client_email;
-        if (!this.key || !this.iss) {
-          const e = new Error('private_key and client_email are required.');
-          (e as NodeJS.ErrnoException).code = 'MISSING_CREDENTIALS';
-          throw e;
-        }
-      } else {
-        // Must be a .p12 file or .pem key
-        if (!this.iss) {
-          const e = new Error('email is required.');
-          (e as NodeJS.ErrnoException).code = 'MISSING_CREDENTIALS';
-          throw e;
-        }
-
-        if (mimeType === 'application/x-pkcs12') {
-          // convert to .pem on the fly
-          const key = await toPem(this.keyFile);
-          this.key = key;
-        } else {
-          // assume .pem key otherwise
+      switch (mimeType) {
+        case 'application/json': {
+          // *.json file
           const key = await readFile(this.keyFile, 'utf8');
-          this.key = key;
+          const body = JSON.parse(key);
+          this.key = body.private_key;
+          this.iss = body.client_email;
+          if (!this.key || !this.iss) {
+            throw new ErrorWithCode(
+                'private_key and client_email are required.',
+                'MISSING_CREDENTIALS');
+          }
+          break;
         }
+        case 'application/x-x509-ca-cert': {
+          // *.pem file
+          this.ensureEmail();
+          this.key = await readFile(this.keyFile, 'utf8');
+          break;
+        }
+        case 'application/x-pkcs12': {
+          // *.p12 file
+          this.ensureEmail();
+          this.key = await toPem(this.keyFile);
+          break;
+        }
+        default:
+          throw new ErrorWithCode(
+              'Unknown certificate type. Type is determined based on file extension.  Current supported extensions are *.json, *.pem, and *.p12.',
+              'UNKNOWN_CERTIFICATE_TYPE');
       }
     }
     return this.requestToken();
+  }
+
+  private ensureEmail() {
+    if (!this.iss) {
+      throw new ErrorWithCode('email is required.', 'MISSING_CREDENTIALS');
+    }
   }
 
   /**
