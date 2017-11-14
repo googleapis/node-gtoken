@@ -53,5 +53,11 @@
     "nyc": "^11.2.1",
     "source-map-support": "^0.5.0",
     "typescript": "~2.6.0"
-  }
+  },
+  "files": [
+    "build/src",
+    "LICENSE",
+    "packge.json",
+    "README.md"
+  ]
 }
