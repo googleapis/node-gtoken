@@ -1,13 +1,12 @@
 import axios from 'axios';
 import * as fs from 'fs';
+import {getPem} from 'google-p12-pem';
 import * as mime from 'mime';
 import * as pify from 'pify';
 
-const gp12pem = require('google-p12-pem');
 const jws = require('jws');
 
 const readFile = pify(fs.readFile);
-const toPem = pify(gp12pem);
 
 const GOOGLE_TOKEN_URL = 'https://accounts.google.com/o/oauth2/token';
 const GOOGLE_REVOKE_TOKEN_URL =
@@ -126,7 +125,7 @@ export class GoogleToken {
         case 'application/x-pkcs12': {
           // *.p12 file
           this.ensureEmail();
-          this.key = await toPem(this.keyFile);
+          this.key = await getPem(this.keyFile);
           break;
         }
         default:
