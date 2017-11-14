@@ -1,10 +1,9 @@
 import axios from 'axios';
 import * as fs from 'fs';
 import {getPem} from 'google-p12-pem';
+import * as jws from 'jws';
 import * as mime from 'mime';
 import * as pify from 'pify';
-
-const jws = require('jws');
 
 const readFile = pify(fs.readFile);
 
@@ -215,7 +214,7 @@ export class GoogleToken {
     }
 
     const toSign = {
-      header: {alg: 'RS256', typ: 'JWT'},
+      header: {alg: 'RS256'} as jws.Header,
       payload,
       secret: this.key
     };
