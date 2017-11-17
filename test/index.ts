@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as mime from 'mime';
 import * as nock from 'nock';
 
-import {GoogleToken} from '../src/lib/index';
+import {GoogleToken} from '../src/index';
 
 const EMAIL = 'example@developer.gserviceaccount.com';
 const UNKNOWN_KEYFILE = './test/assets/key';
