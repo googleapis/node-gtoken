@@ -7,6 +7,7 @@
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![codecov][codecov-image]][codecov-url]
 [![Greenkeeper badge][greenkeeper-image]][greenkeeper-url]
+[![style badge][gts-image]][gts-url]
 
 Node.js Google Authentication Service Account Tokens
 
@@ -172,18 +173,20 @@ Breaking changes:
 
 [MIT](LICENSE)
 
-[gdevconsole]: https://console.developers.google.com
-[npm-image]: https://img.shields.io/npm/v/gtoken.svg
-[npm-url]: https://npmjs.org/package/gtoken
-[travis-image]: https://travis-ci.org/google/node-gtoken.svg?branch=master
-[travis-url]: https://travis-ci.org/google/node-gtoken
+[codecov-image]: https://codecov.io/gh/google/node-gtoken/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/google/node-gtoken
 [david-image]: https://david-dm.org/google/node-gtoken.svg
 [david-url]: https://david-dm.org/google/node-gtoken
 [david-dev-image]: https://david-dm.org/google/node-gtoken/dev-status.svg
 [david-dev-url]: https://david-dm.org/google/node-gtoken?type=dev
-[snyk-image]: https://snyk.io/test/github/google/node-gtoken/badge.svg
-[snyk-url]: https://snyk.io/test/github/google/node-gtoken
-[codecov-image]: https://codecov.io/gh/google/node-gtoken/branch/master/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/google/node-gtoken
+[gdevconsole]: https://console.developers.google.com
 [greenkeeper-image]: https://badges.greenkeeper.io/google/node-gtoken.svg
 [greenkeeper-url]: https://greenkeeper.io/
+[gts-image]: https://img.shields.io/badge/code%20style-Google%20%E2%98%82%EF%B8%8F-blue.svg
+[gts-url]: https://www.npmjs.com/package/gts
+[npm-image]: https://img.shields.io/npm/v/gtoken.svg
+[npm-url]: https://npmjs.org/package/gtoken
+[snyk-image]: https://snyk.io/test/github/google/node-gtoken/badge.svg
+[snyk-url]: https://snyk.io/test/github/google/node-gtoken
+[travis-image]: https://travis-ci.org/google/node-gtoken.svg?branch=master
+[travis-url]: https://travis-ci.org/google/node-gtoken
