@@ -4,6 +4,7 @@ import {getPem} from 'google-p12-pem';
 import * as jws from 'jws';
 import * as mime from 'mime';
 import * as pify from 'pify';
+import * as querystring from 'querystring';
 
 const readFile = pify(fs.readFile);
 
@@ -221,11 +222,15 @@ export class GoogleToken {
 
     const signedJWT = jws.sign(toSign);
 
-    return axios
-        .post(GOOGLE_TOKEN_URL, {
-          grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-          assertion: signedJWT
-        })
+    return axios({
+             method: 'post',
+             url: GOOGLE_TOKEN_URL,
+             data: querystring.stringify({
+               grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+               assertion: signedJWT
+             }),
+             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+           })
         .then(r => {
           const body = r.data;
           this.rawToken = body;

@@ -64,7 +64,7 @@ const TESTDATA_P12_NO_EMAIL = {
   keyFile: P12FILE
 };
 
-const noop = () => undefined;
+nock.disableNetConnect();
 
 describe('gtoken', () => {
   it('should exist', () => {
@@ -380,17 +380,19 @@ describe('gtoken', () => {
           done();
         });
       });
-
     });
   });
 });
 
 function createGetTokenMock(code = 200, body?: {}) {
   nock(GOOGLE_TOKEN_URLS[0])
-      .post(GOOGLE_TOKEN_URLS[1], {
-        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        assertion: /.?/
-      })
+      .replyContentLength()
+      .post(
+          GOOGLE_TOKEN_URLS[1], {
+            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            assertion: /.?/
+          },
+          {reqheaders: {'Content-Type': 'application/x-www-form-urlencoded'}})
       .reply(code, body);
 }
 
