@@ -43,7 +43,7 @@
     "@types/jws": "^3.1.0",
     "@types/mime": "^2.0.0",
     "@types/mocha": "^2.2.43",
-    "@types/nock": "^8.2.1",
+    "@types/nock": "^9.1.0",
     "@types/node": "^8.0.47",
     "@types/pify": "^3.0.0",
     "codecov": "^3.0.0",
