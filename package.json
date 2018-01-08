@@ -45,7 +45,7 @@
     "@types/mime": "^2.0.0",
     "@types/mocha": "^2.2.43",
     "@types/nock": "^9.1.0",
-    "@types/node": "^8.0.47",
+    "@types/node": "^9.3.0",
     "@types/pify": "^3.0.0",
     "codecov": "^3.0.0",
     "gts": "^0.5.1",
