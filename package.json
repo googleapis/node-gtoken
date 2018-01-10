@@ -49,7 +49,7 @@
     "@types/pify": "^3.0.0",
     "codecov": "^3.0.0",
     "gts": "^0.5.1",
-    "js-green-licenses": "^0.2.0",
+    "js-green-licenses": "^0.3.0",
     "mocha": "^4.0.1",
     "nock": "^9.0.27",
     "nyc": "^11.2.1",
