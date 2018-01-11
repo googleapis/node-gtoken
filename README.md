@@ -22,7 +22,7 @@ npm install gtoken
 ### Use with a `.pem` or `.p12` key file:
 
 ``` js
-const GoogleToken = require('gtoken');
+const { GoogleToken } = require('gtoken');
 const gtoken = new GoogleToken({
   keyFile: 'path/to/key.pem', // or path to .p12 key file
   email: 'my_service_account_email@developer.gserviceaccount.com',
@@ -58,7 +58,7 @@ gtoken.getToken()
 ### Use with a service account `.json` key file:
 
 ``` js
-const GoogleToken = require('gtoken');
+const { GoogleToken } = require('gtoken');
 const gtoken = new GoogleToken({
   keyFile: 'path/to/key.json',
   scope: ['https://scope1', 'https://scope2'] // or space-delimited string of scopes
@@ -77,7 +77,7 @@ gtoken.getToken(function(err, token) {
 
 ``` js
 const key = '-----BEGIN RSA PRIVATE KEY-----\nXXXXXXXXXXX...';
-const GoogleToken = require('gtoken');
+const { GoogleToken } = require('gtoken');
 const gtoken = new GoogleToken({
   email: 'my_service_account_email@developer.gserviceaccount.com',
   scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
