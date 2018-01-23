@@ -23,11 +23,12 @@ interface Payload {
 
 export interface TokenOptions {
   keyFile?: string;
-  key?: string|undefined;
-  email?: string|undefined;
+  key?: string;
+  email?: string;
   iss?: string;
   sub?: string;
   scope?: string|string[];
+  additionalClaims?: {};
 }
 
 class ErrorWithCode extends Error {
@@ -39,14 +40,15 @@ class ErrorWithCode extends Error {
 export class GoogleToken {
   token: string|null;
   expiresAt: number|null;
-  key: string|undefined;
-  keyFile: string|undefined;
-  iss: string|undefined;
-  sub: string;
-  scope: string|undefined;
+  key?: string;
+  keyFile?: string;
+  iss?: string;
+  sub?: string;
+  scope?: string;
   rawToken: string|null;
   tokenExpires: number|null;
   email: string;
+  additionalClaims?: {};
 
   /**
    * Create a GoogleToken.
@@ -168,7 +170,8 @@ export class GoogleToken {
         sub: this.sub,
         key: this.key,
         keyFile: this.keyFile,
-        scope: this.scope
+        scope: this.scope,
+        additionalClaims: this.additionalClaims,
       });
     });
   }
@@ -183,10 +186,8 @@ export class GoogleToken {
     this.key = options.key;
     this.token = this.expiresAt = this.rawToken = null;
     this.iss = options.email || options.iss;
-
-    if (options.sub) {
-      this.sub = options.sub;
-    }
+    this.sub = options.sub;
+    this.additionalClaims = options.additionalClaims;
 
     if (typeof options.scope === 'object') {
       this.scope = options.scope.join(' ');
@@ -197,31 +198,22 @@ export class GoogleToken {
 
   /**
    * Request the token from Google.
-   *
-   * @param  {Function} callback The callback function.
    */
   private async requestToken() {
     const iat = Math.floor(new Date().getTime() / 1000);
-    const payload = {
-      iss: this.iss,
-      scope: this.scope,
-      aud: GOOGLE_TOKEN_URL,
-      exp: iat + 3600,  // 3600 seconds = 1 hour
-      iat,
-    } as Payload;
-
-    if (this.sub) {
-      payload.sub = this.sub;
-    }
-
-    const toSign = {
-      header: {alg: 'RS256'} as jws.Header,
-      payload,
-      secret: this.key
-    };
-
-    const signedJWT = jws.sign(toSign);
-
+    const additionalClaims = this.additionalClaims || {};
+    const payload = Object.assign(
+        {
+          iss: this.iss,
+          scope: this.scope,
+          aud: GOOGLE_TOKEN_URL,
+          exp: iat + 3600,
+          iat,
+          sub: this.sub
+        },
+        additionalClaims);
+    const signedJWT =
+        jws.sign({header: {alg: 'RS256'}, payload, secret: this.key});
     return axios({
              method: 'post',
              url: GOOGLE_TOKEN_URL,
