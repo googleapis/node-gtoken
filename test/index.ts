@@ -246,6 +246,15 @@ describe('gtoken', () => {
       });
     });
 
+    it('should accept additional claims', async () => {
+      const opts = Object.assign(
+          TESTDATA_KEYFILE, {additionalClaims: {fancyClaim: 'isFancy'}});
+      const gtoken = new GoogleToken(opts);
+      createGetTokenMock();
+      const token = await gtoken.getToken();
+      assert.deepEqual(gtoken.key, KEYCONTENTS);
+    });
+
     it('should return error if iss is not set with .json', done => {
       const gtoken = new GoogleToken(TESTDATA_KEYFILENOEMAILJSON);
       gtoken.getToken(err => {
