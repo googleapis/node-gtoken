@@ -61,5 +61,10 @@
     "LICENSE",
     "packge.json",
     "README.md"
-  ]
+  ],
+  "nyc": {
+    "exclude": [
+      "build/test"
+    ]
+  }
 }
