@@ -8,7 +8,7 @@ import * as querystring from 'querystring';
 
 const readFile = pify(fs.readFile);
 
-const GOOGLE_TOKEN_URL = 'https://accounts.google.com/o/oauth2/token';
+const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token';
 const GOOGLE_REVOKE_TOKEN_URL =
     'https://accounts.google.com/o/oauth2/revoke?token=';
 
