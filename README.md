@@ -1,7 +1,7 @@
 # node-gtoken
 
 [![NPM Version][npm-image]][npm-url]
-[![Build Status][travis-image]][travis-url]
+[![CircleCI][circle-image]][circle-url]
 [![Dependency Status][david-image]][david-url]
 [![devDependency Status][david-dev-image]][david-dev-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
@@ -173,6 +173,8 @@ Breaking changes:
 
 [MIT](LICENSE)
 
+[circle-image]: https://circleci.com/gh/google/node-gtoken.svg?style=svg
+[circle-url]: https://circleci.com/gh/google/node-gtoken
 [codecov-image]: https://codecov.io/gh/google/node-gtoken/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/google/node-gtoken
 [david-image]: https://david-dm.org/google/node-gtoken.svg
@@ -188,5 +190,3 @@ Breaking changes:
 [npm-url]: https://npmjs.org/package/gtoken
 [snyk-image]: https://snyk.io/test/github/google/node-gtoken/badge.svg
 [snyk-url]: https://snyk.io/test/github/google/node-gtoken
-[travis-image]: https://travis-ci.org/google/node-gtoken.svg?branch=master
-[travis-url]: https://travis-ci.org/google/node-gtoken
