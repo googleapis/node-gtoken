@@ -17,7 +17,7 @@ const SCOPE1 = 'https://www.googleapis.com/auth/urlshortener';
 const SCOPE2 = 'https://www.googleapis.com/auth/drive';
 const SCOPES = [SCOPE1, SCOPE2];
 
-const GOOGLE_TOKEN_URLS = ['https://accounts.google.com', '/o/oauth2/token'];
+const GOOGLE_TOKEN_URLS = ['https://www.googleapis.com', '/oauth2/v4/token'];
 const GOOGLE_REVOKE_TOKEN_URLS =
     ['https://accounts.google.com', '/o/oauth2/revoke', '?token='];
 
