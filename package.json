@@ -34,7 +34,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.17.0",
+    "axios": "^0.18.0",
     "google-p12-pem": "^1.0.0",
     "jws": "^3.0.0",
     "mime": "^2.0.3",
