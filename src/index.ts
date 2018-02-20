@@ -38,16 +38,16 @@ class ErrorWithCode extends Error {
 }
 
 export class GoogleToken {
-  token: string|null;
-  expiresAt: number|null;
+  token: string|null = null;
+  expiresAt: number|null = null;
   key?: string;
   keyFile?: string;
   iss?: string;
   sub?: string;
   scope?: string;
-  rawToken: string|null;
-  tokenExpires: number|null;
-  email: string;
+  rawToken: string|null = null;
+  tokenExpires: number|null = null;
+  email?: string;
   additionalClaims?: {};
 
   /**
