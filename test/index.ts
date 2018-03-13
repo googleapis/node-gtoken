@@ -11,9 +11,6 @@ const KEYFILEJSON = './test/assets/key.json';
 const KEYFILENOEMAILJSON = './test/assets/key-no-email.json';
 const KEYCONTENTS = fs.readFileSync(KEYFILE, 'utf8');
 const KEYJSONCONTENTS = fs.readFileSync(KEYFILEJSON, 'utf8');
-const SCOPE1 = 'https://www.googleapis.com/auth/urlshortener';
-const SCOPE2 = 'https://www.googleapis.com/auth/drive';
-
 const GOOGLE_TOKEN_URLS = ['https://www.googleapis.com', '/oauth2/v4/token'];
 const GOOGLE_REVOKE_TOKEN_URLS =
     ['https://accounts.google.com', '/o/oauth2/revoke', '?token='];
@@ -393,6 +390,13 @@ describe('.getToken()', () => {
         done();
       });
     });
+  });
+
+  it('should return credentials outside of getToken flow', async () => {
+    const gtoken = new GoogleToken(TESTDATA_KEYFILEJSON);
+    const creds = await gtoken.getCredentials(KEYFILEJSON);
+    assert(creds.privateKey);
+    assert(creds.clientEmail);
   });
 });
 
