@@ -131,7 +131,8 @@ export class GoogleToken {
       }
       default:
         throw new ErrorWithCode(
-            'Unknown certificate type. Type is determined based on file extension.  Current supported extensions are *.json, *.pem, and *.p12.',
+            'Unknown certificate type. Type is determined based on file extension. ' +
+                'Current supported extensions are *.json, *.pem, and *.p12.',
             'UNKNOWN_CERTIFICATE_TYPE');
     }
   }
