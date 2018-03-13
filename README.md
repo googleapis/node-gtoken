@@ -106,6 +106,14 @@ gtoken.getToken(function(err, token) {
 });
 ```
 
+### .getCredentials('path/to/key.json')
+
+> Given a keyfile, returns the key and (if available) the client email.
+
+```js
+const creds = await gtoken.getCredentials('path/to/key.json');
+```
+
 ### Properties
 
 > Various properties set on the gtoken object after call to `.getToken()`.

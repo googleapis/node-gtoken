@@ -21,6 +21,11 @@ interface Payload {
   sub: string;
 }
 
+export interface Credentials {
+  privateKey: string;
+  clientEmail?: string;
+}
+
 export interface TokenOptions {
   keyFile?: string;
   key?: string;
@@ -93,6 +98,44 @@ export class GoogleToken {
     return this.getTokenAsync();
   }
 
+  /**
+   * Given a keyFile, extract the key and client email if available
+   * @param keyFile Path to a json, pem, or p12 file that contains the key.
+   * @returns an object with privateKey and clientEmail properties
+   */
+  async getCredentials(keyFile: string): Promise<Credentials> {
+    const mimeType = mime.getType(keyFile);
+    switch (mimeType) {
+      case 'application/json': {
+        // *.json file
+        const key = await readFile(keyFile, 'utf8');
+        const body = JSON.parse(key);
+        const privateKey = body.private_key;
+        const clientEmail = body.client_email;
+        if (!privateKey || !clientEmail) {
+          throw new ErrorWithCode(
+              'private_key and client_email are required.',
+              'MISSING_CREDENTIALS');
+        }
+        return {privateKey, clientEmail};
+      }
+      case 'application/x-x509-ca-cert': {
+        // *.pem file
+        const privateKey = await readFile(keyFile, 'utf8');
+        return {privateKey};
+      }
+      case 'application/x-pkcs12': {
+        // *.p12 file
+        const privateKey = await getPem(keyFile);
+        return {privateKey};
+      }
+      default:
+        throw new ErrorWithCode(
+            'Unknown certificate type. Type is determined based on file extension.  Current supported extensions are *.json, *.pem, and *.p12.',
+            'UNKNOWN_CERTIFICATE_TYPE');
+    }
+  }
+
   private async getTokenAsync() {
     if (!this.hasExpired()) {
       return Promise.resolve(this.token);
@@ -103,37 +146,11 @@ export class GoogleToken {
     }
 
     if (!this.key && this.keyFile) {
-      const mimeType = mime.getType(this.keyFile);
-      switch (mimeType) {
-        case 'application/json': {
-          // *.json file
-          const key = await readFile(this.keyFile, 'utf8');
-          const body = JSON.parse(key);
-          this.key = body.private_key;
-          this.iss = body.client_email;
-          if (!this.key || !this.iss) {
-            throw new ErrorWithCode(
-                'private_key and client_email are required.',
-                'MISSING_CREDENTIALS');
-          }
-          break;
-        }
-        case 'application/x-x509-ca-cert': {
-          // *.pem file
-          this.ensureEmail();
-          this.key = await readFile(this.keyFile, 'utf8');
-          break;
-        }
-        case 'application/x-pkcs12': {
-          // *.p12 file
-          this.ensureEmail();
-          this.key = await getPem(this.keyFile);
-          break;
-        }
-        default:
-          throw new ErrorWithCode(
-              'Unknown certificate type. Type is determined based on file extension.  Current supported extensions are *.json, *.pem, and *.p12.',
-              'UNKNOWN_CERTIFICATE_TYPE');
+      const creds = await this.getCredentials(this.keyFile);
+      this.key = creds.privateKey;
+      this.iss = creds.clientEmail || this.iss;
+      if (!creds.clientEmail) {
+        this.ensureEmail();
       }
     }
     return this.requestToken();
