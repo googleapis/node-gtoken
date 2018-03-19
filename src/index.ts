@@ -26,6 +26,14 @@ export interface Credentials {
   clientEmail?: string;
 }
 
+export interface TokenData {
+  refresh_token?: string;
+  expires_in?: number;
+  access_token?: string;
+  token_type?: string;
+  id_token?: string;
+}
+
 export interface TokenOptions {
   keyFile?: string;
   key?: string;
@@ -43,14 +51,14 @@ class ErrorWithCode extends Error {
 }
 
 export class GoogleToken {
-  token: string|null = null;
-  expiresAt: number|null = null;
+  token?: string|null = null;
+  expiresAt?: number|null = null;
   key?: string;
   keyFile?: string;
   iss?: string;
   sub?: string;
   scope?: string;
-  rawToken: string|null = null;
+  rawToken: TokenData|null = null;
   tokenExpires: number|null = null;
   email?: string;
   additionalClaims?: {};
@@ -83,10 +91,11 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  getToken(): Promise<string|null>;
-  getToken(callback: (err: Error|null, token?: string|null) => void): void;
-  getToken(callback?: (err: Error|null, token?: string|null) => void):
-      void|Promise<string|null> {
+  getToken(): Promise<string|null|undefined>;
+  getToken(callback: (err: Error|null, token?: string|null|undefined) => void):
+      void;
+  getToken(callback?: (err: Error|null, token?: string|null|undefined) => void):
+      void|Promise<string|null|undefined> {
     if (callback) {
       this.getTokenAsync()
           .then(t => {
@@ -137,7 +146,7 @@ export class GoogleToken {
     }
   }
 
-  private async getTokenAsync() {
+  private async getTokenAsync(): Promise<string|null|undefined> {
     if (!this.hasExpired()) {
       return Promise.resolve(this.token);
     }
@@ -217,7 +226,7 @@ export class GoogleToken {
   /**
    * Request the token from Google.
    */
-  private async requestToken() {
+  private async requestToken(): Promise<string|null|undefined> {
     const iat = Math.floor(new Date().getTime() / 1000);
     const additionalClaims = this.additionalClaims || {};
     const payload = Object.assign(
@@ -232,20 +241,20 @@ export class GoogleToken {
         additionalClaims);
     const signedJWT =
         jws.sign({header: {alg: 'RS256'}, payload, secret: this.key});
-    return axios({
-             method: 'post',
-             url: GOOGLE_TOKEN_URL,
-             data: querystring.stringify({
-               grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-               assertion: signedJWT
-             }),
-             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-           })
+    return axios
+        .post<TokenData>(
+            GOOGLE_TOKEN_URL, querystring.stringify({
+              grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+              assertion: signedJWT
+            }),
+            {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
         .then(r => {
-          const body = r.data;
-          this.rawToken = body;
-          this.token = body.access_token;
-          this.expiresAt = (iat + body.expires_in) * 1000;
+          this.rawToken = r.data;
+          this.token = r.data.access_token;
+          this.expiresAt =
+              (r.data.expires_in === null || r.data.expires_in === undefined) ?
+              null :
+              (iat + r.data.expires_in!) * 1000;
           return this.token;
         })
         .catch(e => {
