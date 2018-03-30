@@ -1,6 +1,5 @@
 import axios from 'axios';
 import * as fs from 'fs';
-import {getPem} from 'google-p12-pem';
 import * as jws from 'jws';
 import * as mime from 'mime';
 import * as pify from 'pify';
@@ -135,6 +134,7 @@ export class GoogleToken {
       }
       case 'application/x-pkcs12': {
         // *.p12 file
+        const {getPem} = await import('google-p12-pem');
         const privateKey = await getPem(keyFile);
         return {privateKey};
       }
