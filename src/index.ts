@@ -136,10 +136,10 @@ export class GoogleToken {
       }
       case 'application/x-pkcs12': {
         // *.p12 file
-        // NOTE:  The loading of `google-p12-pem` is deferred for performance reasons.  The
-        // `node-forge` npm module in `google-p12-pem` adds a fair bit time to overall module
-        // loading, and is likely not frequently used.  In a future release, p12 support will
-        // be entirely removed.
+        // NOTE:  The loading of `google-p12-pem` is deferred for performance
+        // reasons.  The `node-forge` npm module in `google-p12-pem` adds a fair
+        // bit time to overall module loading, and is likely not frequently
+        // used.  In a future release, p12 support will be entirely removed.
         if (!getPem) {
           getPem = (await import('google-p12-pem')).getPem;
         }
