@@ -49,7 +49,7 @@ class ErrorWithCode extends Error {
   }
 }
 
-let getPem: (filename: string) => Promise<string>;
+let getPem: ((filename: string) => Promise<string>)|undefined;
 
 export class GoogleToken {
   token?: string|null = null;
