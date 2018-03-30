@@ -49,6 +49,8 @@ class ErrorWithCode extends Error {
   }
 }
 
+let getPem: (filename: string) => Promise<string>;
+
 export class GoogleToken {
   token?: string|null = null;
   expiresAt?: number|null = null;
@@ -134,7 +136,9 @@ export class GoogleToken {
       }
       case 'application/x-pkcs12': {
         // *.p12 file
-        const {getPem} = await import('google-p12-pem');
+        if (!getPem) {
+          getPem = (await import('google-p12-pem')).getPem;
+        }
         const privateKey = await getPem(keyFile);
         return {privateKey};
       }
