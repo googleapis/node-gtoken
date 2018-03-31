@@ -1,6 +1,5 @@
 import axios from 'axios';
 import * as fs from 'fs';
-import {getPem} from 'google-p12-pem';
 import * as jws from 'jws';
 import * as mime from 'mime';
 import * as pify from 'pify';
@@ -49,6 +48,8 @@ class ErrorWithCode extends Error {
     super(message);
   }
 }
+
+let getPem: ((filename: string) => Promise<string>)|undefined;
 
 export class GoogleToken {
   token?: string|null = null;
@@ -135,6 +136,13 @@ export class GoogleToken {
       }
       case 'application/x-pkcs12': {
         // *.p12 file
+        // NOTE:  The loading of `google-p12-pem` is deferred for performance
+        // reasons.  The `node-forge` npm module in `google-p12-pem` adds a fair
+        // bit time to overall module loading, and is likely not frequently
+        // used.  In a future release, p12 support will be entirely removed.
+        if (!getPem) {
+          getPem = (await import('google-p12-pem')).getPem;
+        }
         const privateKey = await getPem(keyFile);
         return {privateKey};
       }
