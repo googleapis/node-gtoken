@@ -1,6 +1,6 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import * as fs from 'fs';
-import * as nock from 'nock';
+import nock from 'nock';
 import {GoogleToken} from '../src/index';
 
 const EMAIL = 'example@developer.gserviceaccount.com';
