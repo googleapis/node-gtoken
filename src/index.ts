@@ -1,8 +1,8 @@
 import axios from 'axios';
 import * as fs from 'fs';
 import * as jws from 'jws';
-import * as mime from 'mime';
-import * as pify from 'pify';
+import mime from 'mime';
+import pify from 'pify';
 import * as querystring from 'querystring';
 
 const readFile = pify(fs.readFile);
