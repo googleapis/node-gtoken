@@ -7,16 +7,9 @@ release_tags: &release_tags
 unit_tests: &unit_tests
   steps:
     - checkout
-    - run:
-        name: Install modules and dependencies.
-        command: npm install
-    - run:
-        name: Run unit tests.
-        command: npm test
-    - run:
-        name: Submit coverage data to codecov.
-        command: npm run codecov
-        when: always
+    - run: npm install
+    - run: npm test
+    - run: npm run codecov
 
 version: 2.0
 workflows:
@@ -62,12 +55,6 @@ jobs:
         user: node
     steps:
       - checkout
-      - run:
-          name: Set npm authentication.
-          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-      - run:
-          name: Install modules and dependencies.
-          command: npm install
-      - run:
-          name: Publish the module to npm.
-          command: npm publish
+      - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+      - run: npm install
+      - run: npm publish
