@@ -57,7 +57,7 @@
     "nock": "^9.1.6",
     "nyc": "^12.0.2",
     "source-map-support": "^0.5.3",
-    "typescript": "~2.7.2"
+    "typescript": "~2.9.0"
   },
   "files": [
     "build/src",
