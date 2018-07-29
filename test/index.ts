@@ -198,7 +198,7 @@ describe('.getToken()', () => {
     const gtoken = new GoogleToken(TESTDATA_KEYFILE);
     const scope = createGetTokenMock();
     gtoken.getToken((err, token) => {
-      assert.deepEqual(gtoken.key, KEYCONTENTS);
+      assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
       scope.done();
       done();
     });
@@ -209,7 +209,7 @@ describe('.getToken()', () => {
     const scope = createGetTokenMock();
     const token = await gtoken.getToken();
     scope.done();
-    assert.deepEqual(gtoken.key, KEYCONTENTS);
+    assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
   });
 
   it('should return error if iss is not set with .pem', done => {
@@ -239,8 +239,8 @@ describe('.getToken()', () => {
       scope.done();
       assert.strictEqual(err, null);
       const parsed = JSON.parse(KEYJSONCONTENTS);
-      assert.deepEqual(gtoken.key, parsed.private_key);
-      assert.deepEqual(gtoken.iss, parsed.client_email);
+      assert.deepStrictEqual(gtoken.key, parsed.private_key);
+      assert.deepStrictEqual(gtoken.iss, parsed.client_email);
       done();
     });
   });
@@ -252,7 +252,7 @@ describe('.getToken()', () => {
     const scope = createGetTokenMock();
     const token = await gtoken.getToken();
     scope.done();
-    assert.deepEqual(gtoken.key, KEYCONTENTS);
+    assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
   });
 
   it('should return error if iss is not set with .json', done => {
@@ -334,7 +334,7 @@ describe('.getToken()', () => {
       const scope = createGetTokenMock(200, RESPBODY);
       gtoken.getToken((err, token) => {
         scope.done();
-        assert.deepEqual(gtoken.rawToken, RESPBODY);
+        assert.deepStrictEqual(gtoken.rawToken, RESPBODY);
         assert.strictEqual(gtoken.token, 'accesstoken123');
         assert.strictEqual(gtoken.token, token);
         assert.strictEqual(err, null);
@@ -356,7 +356,6 @@ describe('.getToken()', () => {
         assert(err);
         assert.strictEqual(gtoken.rawToken, null);
         assert.strictEqual(gtoken.token, null);
-        assert.strictEqual(gtoken.token, token);
         if (err) assert.strictEqual(err.message, ERROR);
         assert.strictEqual(gtoken.expiresAt, null);
         done();
