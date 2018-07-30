@@ -61,7 +61,7 @@ const TESTDATA_P12_NO_EMAIL = {
 nock.disableNetConnect();
 
 it('should exist', () => {
-  assert.equal(typeof GoogleToken, 'function');
+  assert.strictEqual(typeof GoogleToken, 'function');
 });
 
 it('should work without new or options', () => {
@@ -72,42 +72,42 @@ it('should work without new or options', () => {
 describe('.iss', () => {
   it('should be set from email option', () => {
     const gtoken = new GoogleToken({email: EMAIL});
-    assert.equal(gtoken.iss, EMAIL);
-    assert.equal(gtoken.email, undefined);
+    assert.strictEqual(gtoken.iss, EMAIL);
+    assert.strictEqual(gtoken.email, undefined);
   });
 
   it('should be set from iss option', () => {
     const gtoken = new GoogleToken({iss: EMAIL});
-    assert.equal(gtoken.iss, EMAIL);
+    assert.strictEqual(gtoken.iss, EMAIL);
   });
 
   it('should be set from sub option', () => {
     const gtoken = new GoogleToken({sub: EMAIL});
-    assert.equal(gtoken.sub, EMAIL);
+    assert.strictEqual(gtoken.sub, EMAIL);
   });
 
   it('should be set from email option over iss option', () => {
     const gtoken = new GoogleToken({iss: EMAIL, email: 'another' + EMAIL});
-    assert.equal(gtoken.iss, 'another' + EMAIL);
+    assert.strictEqual(gtoken.iss, 'another' + EMAIL);
   });
 });
 
 describe('.scope', () => {
   it('should accept strings', () => {
     const gtoken = new GoogleToken({scope: 'hello world'});
-    assert.equal(gtoken.scope, 'hello world');
+    assert.strictEqual(gtoken.scope, 'hello world');
   });
 
   it('should accept array of strings', () => {
     const gtoken = new GoogleToken({scope: ['hello', 'world']});
-    assert.equal(gtoken.scope, 'hello world');
+    assert.strictEqual(gtoken.scope, 'hello world');
   });
 });
 
 describe('.hasExpired()', () => {
   it('should exist', () => {
     const gtoken = new GoogleToken();
-    assert.equal(typeof gtoken.hasExpired, 'function');
+    assert.strictEqual(typeof gtoken.hasExpired, 'function');
   });
 
   it('should detect expired tokens', () => {
@@ -128,7 +128,7 @@ describe('.hasExpired()', () => {
 describe('.revokeToken()', () => {
   it('should exist', () => {
     const gtoken = new GoogleToken();
-    assert.equal(typeof gtoken.revokeToken, 'function');
+    assert.strictEqual(typeof gtoken.revokeToken, 'function');
   });
 
   it('should run accept config properties', done => {
@@ -137,7 +137,7 @@ describe('.revokeToken()', () => {
     const gtoken = new GoogleToken();
     gtoken.token = token;
     gtoken.revokeToken(err => {
-      assert.equal(gtoken.token, null);
+      assert.strictEqual(gtoken.token, null);
       scope.done();
       done();
     });
@@ -162,7 +162,7 @@ describe('.revokeToken()', () => {
     const gtoken = new GoogleToken();
     gtoken.token = token;
     await gtoken.revokeToken();
-    assert.equal(gtoken.token, null);
+    assert.strictEqual(gtoken.token, null);
     scope.done();
   });
 
@@ -191,14 +191,14 @@ describe('.revokeToken()', () => {
 describe('.getToken()', () => {
   it('should exist', () => {
     const gtoken = new GoogleToken();
-    assert.equal(typeof gtoken.getToken, 'function');
+    assert.strictEqual(typeof gtoken.getToken, 'function');
   });
 
   it('should read .pem keyFile from file', done => {
     const gtoken = new GoogleToken(TESTDATA_KEYFILE);
     const scope = createGetTokenMock();
     gtoken.getToken((err, token) => {
-      assert.deepEqual(gtoken.key, KEYCONTENTS);
+      assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
       scope.done();
       done();
     });
@@ -209,7 +209,7 @@ describe('.getToken()', () => {
     const scope = createGetTokenMock();
     const token = await gtoken.getToken();
     scope.done();
-    assert.deepEqual(gtoken.key, KEYCONTENTS);
+    assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
   });
 
   it('should return error if iss is not set with .pem', done => {
@@ -237,10 +237,10 @@ describe('.getToken()', () => {
     const scope = createGetTokenMock();
     gtoken.getToken((err, token) => {
       scope.done();
-      assert.equal(err, null);
+      assert.strictEqual(err, null);
       const parsed = JSON.parse(KEYJSONCONTENTS);
-      assert.deepEqual(gtoken.key, parsed.private_key);
-      assert.deepEqual(gtoken.iss, parsed.client_email);
+      assert.deepStrictEqual(gtoken.key, parsed.private_key);
+      assert.deepStrictEqual(gtoken.iss, parsed.client_email);
       done();
     });
   });
@@ -252,7 +252,7 @@ describe('.getToken()', () => {
     const scope = createGetTokenMock();
     const token = await gtoken.getToken();
     scope.done();
-    assert.deepEqual(gtoken.key, KEYCONTENTS);
+    assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
   });
 
   it('should return error if iss is not set with .json', done => {
@@ -272,7 +272,7 @@ describe('.getToken()', () => {
     gtoken.token = 'mytoken';
     gtoken.expiresAt = new Date().getTime() + 10000;
     gtoken.getToken((err, token) => {
-      assert.equal(token, 'mytoken');
+      assert.strictEqual(token, 'mytoken');
       done();
     });
   });
@@ -282,7 +282,7 @@ describe('.getToken()', () => {
     const scope = createGetTokenMock();
     gtoken.getToken((err, token) => {
       scope.done();
-      assert.equal(err, null);
+      assert.strictEqual(err, null);
       done();
     });
   });
@@ -318,8 +318,8 @@ describe('.getToken()', () => {
       const scope = createGetTokenMock(200, {'access_token': fakeToken});
       gtoken.getToken((err, token) => {
         scope.done();
-        assert.equal(err, null);
-        assert.equal(token, fakeToken);
+        assert.strictEqual(err, null);
+        assert.strictEqual(token, fakeToken);
         done();
       });
     });
@@ -334,10 +334,10 @@ describe('.getToken()', () => {
       const scope = createGetTokenMock(200, RESPBODY);
       gtoken.getToken((err, token) => {
         scope.done();
-        assert.deepEqual(gtoken.rawToken, RESPBODY);
-        assert.equal(gtoken.token, 'accesstoken123');
-        assert.equal(gtoken.token, token);
-        assert.equal(err, null);
+        assert.deepStrictEqual(gtoken.rawToken, RESPBODY);
+        assert.strictEqual(gtoken.token, 'accesstoken123');
+        assert.strictEqual(gtoken.token, token);
+        assert.strictEqual(err, null);
         assert(gtoken.expiresAt);
         if (gtoken.expiresAt) {
           assert(gtoken.expiresAt >= (new Date()).getTime());
@@ -354,11 +354,10 @@ describe('.getToken()', () => {
       gtoken.getToken((err, token) => {
         scope.done();
         assert(err);
-        assert.equal(gtoken.rawToken, null);
-        assert.equal(gtoken.token, null);
-        assert.equal(gtoken.token, token);
-        if (err) assert.equal(err.message, ERROR);
-        assert.equal(gtoken.expiresAt, null);
+        assert.strictEqual(gtoken.rawToken, null);
+        assert.strictEqual(gtoken.token, null);
+        if (err) assert.strictEqual(err.message, ERROR);
+        assert.strictEqual(gtoken.expiresAt, null);
         done();
       });
     });
@@ -373,7 +372,7 @@ describe('.getToken()', () => {
         scope.done();
         assert(err instanceof Error);
         if (err) {
-          assert.equal(err.message, ERROR + ': ' + DESCRIPTION);
+          assert.strictEqual(err.message, ERROR + ': ' + DESCRIPTION);
           done();
         }
       });
@@ -386,7 +385,7 @@ describe('.getToken()', () => {
       gtoken.getToken((err, token) => {
         scope.done();
         assert(err instanceof Error);
-        if (err) assert.equal(err.message, message);
+        if (err) assert.strictEqual(err.message, message);
         done();
       });
     });
