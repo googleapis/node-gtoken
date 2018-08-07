@@ -3,3 +3,4 @@ build/
 coverage/
 .nyc_output/
 .vscode/
+package-lock.json
