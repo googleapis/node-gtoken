@@ -1,0 +1,19 @@
+{
+  "description": "Samples for the node-gtoken npm module.",
+  "license": "MIT",
+  "author": "Google LLC",
+  "engines": {
+    "node": ">=8"
+  },
+  "repository": "google/node-gtoken",
+  "private": true,
+  "scripts": {
+    "test": "mocha system-test"
+  },
+  "dependencies": {
+    "gtoken": "*"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
+}
