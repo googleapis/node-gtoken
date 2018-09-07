@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Google LLC
+ *
+ * Distributed under MIT license.
+ * See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+ */
+
 import axios from 'axios';
 import * as fs from 'fs';
 import * as jws from 'jws';
@@ -10,15 +17,6 @@ const readFile = pify(fs.readFile);
 const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token';
 const GOOGLE_REVOKE_TOKEN_URL =
     'https://accounts.google.com/o/oauth2/revoke?token=';
-
-interface Payload {
-  iss: string;
-  scope: string|string[];
-  aud: string;
-  exp: number;
-  iat: number;
-  sub: string;
-}
 
 export interface Credentials {
   privateKey: string;

@@ -7,12 +7,9 @@
   "engines": {
     "node": ">=6.0.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/google/node-gtoken.git"
-  },
+  "repository": "google/node-gtoken",
   "scripts": {
-    "check": "gts check",
+    "lint": "gts check",
     "clean": "gts clean",
     "codecov": "nyc report --reporter=json && codecov -f coverage/*.json",
     "fix": "gts fix",
@@ -20,8 +17,9 @@
     "test": "nyc mocha build/test",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
-    "posttest": "npm run check && npm run license-check",
-    "license-check": "jsgl --local ."
+    "system-test": "echo no system tests 👻",
+    "samples-test": "cd samples/ && npm link ../ && npm test && cd ../",
+    "docs": "echo no docs 👻"
   },
   "keywords": [
     "google",

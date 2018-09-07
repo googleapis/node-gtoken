@@ -1,7 +1,14 @@
+/**
+ * Copyright 2018 Google LLC
+ *
+ * Distributed under MIT license.
+ * See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+ */
+
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as nock from 'nock';
-import {GoogleToken} from '../src/index';
+import {GoogleToken} from '../src';
 
 const EMAIL = 'example@developer.gserviceaccount.com';
 const UNKNOWN_KEYFILE = './test/assets/key';
