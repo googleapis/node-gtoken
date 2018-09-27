@@ -60,6 +60,7 @@
   },
   "files": [
     "build/src",
+    "!build/src/**/*.map",
     "LICENSE",
     "packge.json",
     "README.md"
