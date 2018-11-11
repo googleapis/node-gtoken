@@ -5,12 +5,11 @@
  * See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
  */
 
-import axios from 'axios';
+import {request} from 'gaxios';
 import * as fs from 'fs';
 import * as jws from 'jws';
 import * as mime from 'mime';
 import * as pify from 'pify';
-import * as querystring from 'querystring';
 
 const readFile = pify(fs.readFile);
 
@@ -197,7 +196,9 @@ export class GoogleToken {
     if (!this.token) {
       throw new Error('No token to revoke.');
     }
-    return axios.get(GOOGLE_REVOKE_TOKEN_URL + this.token).then(r => {
+    return request({
+      url: GOOGLE_REVOKE_TOKEN_URL + this.token
+    }).then(r => {
       this.configure({
         email: this.iss,
         sub: this.sub,
@@ -245,16 +246,18 @@ export class GoogleToken {
           sub: this.sub
         },
         additionalClaims);
-    const signedJWT =
-        jws.sign({header: {alg: 'RS256'}, payload, secret: this.key});
-    return axios
-        .post<TokenData>(
-            GOOGLE_TOKEN_URL, querystring.stringify({
-              grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-              assertion: signedJWT
-            }),
-            {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-        .then(r => {
+    const signedJWT = jws.sign({header: {alg: 'RS256'}, payload, secret: this.key});
+    return request<TokenData>({
+      method: 'POST',
+      url: GOOGLE_TOKEN_URL,
+      data: {
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: signedJWT
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(r => {
           this.rawToken = r.data;
           this.token = r.data.access_token;
           this.expiresAt =
