@@ -1,7 +1,7 @@
 # node-gtoken
 
 [![NPM Version][npm-image]][npm-url]
-[![CircleCI][circle-image]][circle-url]
+[![npm version](https://img.shields.io/npm/v/gtoken.svg)](https://www.npmjs.org/package/gtoken)
 [![Dependency Status][david-image]][david-url]
 [![devDependency Status][david-dev-image]][david-dev-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
@@ -195,3 +195,4 @@ Breaking changes:
 [npm-url]: https://npmjs.org/package/gtoken
 [snyk-image]: https://snyk.io/test/github/google/node-gtoken/badge.svg
 [snyk-url]: https://snyk.io/test/github/google/node-gtoken
+
