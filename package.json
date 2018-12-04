@@ -11,7 +11,6 @@
   "scripts": {
     "lint": "gts check",
     "clean": "gts clean",
-    "codecov": "nyc report --reporter=json && codecov -f coverage/*.json",
     "fix": "gts fix",
     "compile": "tsc -p .",
     "test": "nyc mocha build/test",
@@ -64,10 +63,5 @@
     "LICENSE",
     "packge.json",
     "README.md"
-  ],
-  "nyc": {
-    "exclude": [
-      "build/test"
-    ]
-  }
+  ]
 }
