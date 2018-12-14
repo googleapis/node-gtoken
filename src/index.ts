@@ -95,11 +95,7 @@ export class GoogleToken {
   getToken(callback?: (err: Error|null, token?: string|null|undefined) => void):
       void|Promise<string|null|undefined> {
     if (callback) {
-      this.getTokenAsync()
-          .then(t => {
-            callback(null, t);
-          })
-          .catch(callback);
+      this.getTokenAsync().then(t => callback(null, t), callback);
       return;
     }
     return this.getTokenAsync();
@@ -186,7 +182,7 @@ export class GoogleToken {
   revokeToken(callback: (err?: Error) => void): void;
   revokeToken(callback?: (err?: Error) => void): void|Promise<void> {
     if (callback) {
-      this.revokeTokenAsync().then(() => callback()).catch(callback);
+      this.revokeTokenAsync().then(() => callback(), callback);
       return;
     }
     return this.revokeTokenAsync();
@@ -253,7 +249,8 @@ export class GoogleToken {
                grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
                assertion: signedJWT
              },
-             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+             responseType: 'json'
            })
         .then(r => {
           this.rawToken = r.data;
