@@ -5,4 +5,18 @@
  * See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
  */
 
-console.warn(`no system tests available 👻`);
+import * as assert from 'assert';
+
+import {GoogleToken} from '../src';
+
+describe('gtoken system tests', () => {
+  const gtoken = new GoogleToken({
+    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    scope: 'https://www.googleapis.com/auth/cloud-platform'
+  });
+
+  it('should acquire a token', async () => {
+    const token = await gtoken.getToken();
+    assert.ok(token);
+  });
+});
