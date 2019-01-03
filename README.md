@@ -1,14 +1,13 @@
 # node-gtoken
 
 [![NPM Version][npm-image]][npm-url]
-[![CircleCI][circle-image]][circle-url]
 [![Dependency Status][david-image]][david-url]
 [![devDependency Status][david-dev-image]][david-dev-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![codecov][codecov-image]][codecov-url]
 [![style badge][gts-image]][gts-url]
 
-Node.js Google Authentication Service Account Tokens
+> Node.js Google Authentication Service Account Tokens
 
 ## Installation
 
@@ -164,24 +163,10 @@ $ openssl pkcs12 -in key.p12 -nodes -nocerts > key.pem
 
 Don't forget, the passphrase when converting these files is the string `'notasecret'`
 
-## Changelog
-
-### 1.2.2 -> 2.0.0
-New features:
-- API now supports callback and promise based workflows
-
-Breaking changes:
-- `GoogleToken` is now a class type, and must be instantiated.
-- `GoogleToken.expires_at` renamed to `GoogleToken.expiresAt`
-- `GoogleToken.raw_token` renamed to `GoogleToken.rawToken`
-- `GoogleToken.token_expires` renamed to `GoogleToken.tokenExpires`
-
 ## License
 
 [MIT](LICENSE)
 
-[circle-image]: https://circleci.com/gh/google/node-gtoken.svg?style=svg
-[circle-url]: https://circleci.com/gh/google/node-gtoken
 [codecov-image]: https://codecov.io/gh/google/node-gtoken/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/google/node-gtoken
 [david-image]: https://david-dm.org/google/node-gtoken.svg
