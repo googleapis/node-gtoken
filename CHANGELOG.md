@@ -64,3 +64,13 @@
 - chore(package): update nyc to version 12.0.2 ([#67](https://github.com/google/node-gtoken/pull/67))
 - chore(package): update @types/node to version 10.0.3 ([#65](https://github.com/google/node-gtoken/pull/65))
 
+### 2.0.0
+New features:
+- API now supports callback and promise based workflows
+
+Breaking changes:
+- `GoogleToken` is now a class type, and must be instantiated.
+- `GoogleToken.expires_at` renamed to `GoogleToken.expiresAt`
+- `GoogleToken.raw_token` renamed to `GoogleToken.rawToken`
+- `GoogleToken.token_expires` renamed to `GoogleToken.tokenExpires`
+
