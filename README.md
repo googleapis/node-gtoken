@@ -167,16 +167,16 @@ Don't forget, the passphrase when converting these files is the string `'notasec
 
 [MIT](LICENSE)
 
-[codecov-image]: https://codecov.io/gh/google/node-gtoken/branch/master/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/google/node-gtoken
-[david-image]: https://david-dm.org/google/node-gtoken.svg
-[david-url]: https://david-dm.org/google/node-gtoken
-[david-dev-image]: https://david-dm.org/google/node-gtoken/dev-status.svg
-[david-dev-url]: https://david-dm.org/google/node-gtoken?type=dev
+[codecov-image]: https://codecov.io/gh/googleapis/node-gtoken/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/googleapis/node-gtoken
+[david-image]: https://david-dm.org/googleapis/node-gtoken.svg
+[david-url]: https://david-dm.org/googleapis/node-gtoken
+[david-dev-image]: https://david-dm.org/googleapis/node-gtoken/dev-status.svg
+[david-dev-url]: https://david-dm.org/googleapis/node-gtoken?type=dev
 [gdevconsole]: https://console.developers.google.com
 [gts-image]: https://img.shields.io/badge/code%20style-Google%20%E2%98%82%EF%B8%8F-blue.svg
 [gts-url]: https://www.npmjs.com/package/gts
 [npm-image]: https://img.shields.io/npm/v/gtoken.svg
 [npm-url]: https://npmjs.org/package/gtoken
-[snyk-image]: https://snyk.io/test/github/google/node-gtoken/badge.svg
-[snyk-url]: https://snyk.io/test/github/google/node-gtoken
+[snyk-image]: https://snyk.io/test/github/googleapis/node-gtoken/badge.svg
+[snyk-url]: https://snyk.io/test/github/googleapis/node-gtoken
