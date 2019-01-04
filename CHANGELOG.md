@@ -4,6 +4,19 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## v2.4.0
+
+01-03-2019 22:03 PST
+
+### Documentation
+- docs: generate docs with compodoc ([#154](https://github.com/google/node-gtoken/pull/154))
+- docs: fix up the readme ([#153](https://github.com/google/node-gtoken/pull/153))
+
+### Internal / Testing Changes
+- build: check broken links in generated docs ([#152](https://github.com/google/node-gtoken/pull/152))
+- fix: add a system test and get it passing ([#150](https://github.com/google/node-gtoken/pull/150))
+- chore(build): inject yoshi automation key ([#149](https://github.com/google/node-gtoken/pull/149))
+
 ## v2.3.1
 
 12-10-2018 15:28 PST
