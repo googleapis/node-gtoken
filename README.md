@@ -165,7 +165,7 @@ Don't forget, the passphrase when converting these files is the string `'notasec
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/googleapis/node-gtoken/blob/master/LICENSE)
 
 [codecov-image]: https://codecov.io/gh/googleapis/node-gtoken/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/googleapis/node-gtoken
