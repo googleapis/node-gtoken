@@ -265,13 +265,12 @@ export class GoogleToken {
           this.token = null;
           this.tokenExpires = null;
           const body = (e.response && e.response.data) ? e.response.data : {};
-          let err = e;
           if (body.error) {
             const desc =
                 body.error_description ? `: ${body.error_description}` : '';
-            err = new Error(`${body.error}${desc}`);
+            e.message = `${body.error}${desc}`;
           }
-          throw err;
+          throw e;
         });
   }
 }
