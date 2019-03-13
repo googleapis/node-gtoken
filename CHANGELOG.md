@@ -4,6 +4,29 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## v2.3.3
+
+03-13-2019 14:54 PDT
+
+### Bug Fixes
+- fix: propagate error message ([#173](https://github.com/google/node-gtoken/pull/173))
+
+### Documentation
+- docs: update links in contrib guide ([#171](https://github.com/google/node-gtoken/pull/171))
+- docs: move CONTRIBUTING.md to root ([#166](https://github.com/google/node-gtoken/pull/166))
+- docs: add lint/fix example to contributing guide ([#164](https://github.com/google/node-gtoken/pull/164))
+
+### Internal / Testing Changes
+- build: Add docuploader credentials to node publish jobs ([#176](https://github.com/google/node-gtoken/pull/176))
+- build: use node10 to run samples-test, system-test etc ([#175](https://github.com/google/node-gtoken/pull/175))
+- build: update release configuration
+- chore(deps): update dependency mocha to v6
+- build: use linkinator for docs test ([#170](https://github.com/google/node-gtoken/pull/170))
+- build: create docs test npm scripts ([#169](https://github.com/google/node-gtoken/pull/169))
+- build: test using @grpc/grpc-js in CI ([#168](https://github.com/google/node-gtoken/pull/168))
+- build: ignore googleapis.com in doc link check ([#162](https://github.com/google/node-gtoken/pull/162))
+- build: check for 404s on all docs
+
 ## v2.3.2
 
 01-09-2019 13:40 PST
