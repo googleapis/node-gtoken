@@ -1,182 +1,78 @@
-# node-gtoken
+[//]: # "This README.md file is auto-generated, all changes to this file will be lost."
+[//]: # "To regenerate it, use `python -m synthtool`."
+<img src="https://avatars2.githubusercontent.com/u/2810941?v=3&s=96" alt="Google Cloud Platform logo" title="Google Cloud Platform" align="right" height="96" width="96"/>
 
-[![NPM Version][npm-image]][npm-url]
-[![Dependency Status][david-image]][david-url]
-[![devDependency Status][david-dev-image]][david-dev-url]
-[![Known Vulnerabilities][snyk-image]][snyk-url]
-[![codecov][codecov-image]][codecov-url]
-[![style badge][gts-image]][gts-url]
+# [:  Client](https://github.com/)
 
-> Node.js Google Authentication Service Account Tokens
+None
+[![npm version](https://img.shields.io/npm/v/gtoken.svg)](https://www.npmjs.org/package/gtoken)
+[![codecov](https://img.shields.io/codecov/c/github//master.svg?style=flat)](https://codecov.io/gh/)
 
-## Installation
 
-``` sh
-npm install gtoken
-```
+Node.js Google Authentication Service Account Tokens
 
-## Usage
 
-### Use with a `.pem` or `.p12` key file:
+* [Using the client library](#using-the-client-library)
+* [Versioning](#versioning)
+* [Contributing](#contributing)
+* [License](#license)
 
-``` js
-const { GoogleToken } = require('gtoken');
-const gtoken = new GoogleToken({
-  keyFile: 'path/to/key.pem', // or path to .p12 key file
-  email: 'my_service_account_email@developer.gserviceaccount.com',
-  scope: ['https://scope1', 'https://scope2'] // or space-delimited string of scopes
-});
+## Using the client library
 
-gtoken.getToken(function(err, token) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  console.log(token);
-});
-```
+1.  [Select or create a Cloud Platform project][projects].
+1.  [Enable the  API][enable_api].
+1.  [Set up authentication with a service account][auth] so you can access the
+    API from your local workstation.
 
-You can also use the async/await style API:
+1. Install the client library:
 
-``` js
-const token = await gtoken.getToken()
-console.log(token);
-```
+        npm install gtoken
 
-Or use promises:
 
-```js
-gtoken.getToken()
-  .then(token => {
-    console.log(`Token: ${token}`)
-  })
-  .catch(e => console.error);
-```
 
-### Use with a service account `.json` key file:
 
-``` js
-const { GoogleToken } = require('gtoken');
-const gtoken = new GoogleToken({
-  keyFile: 'path/to/key.json',
-  scope: ['https://scope1', 'https://scope2'] // or space-delimited string of scopes
-});
 
-gtoken.getToken(function(err, token) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  console.log(token);
-});
-```
+The [  Client API Reference][client-docs] documentation
+also contains samples.
 
-### Pass the private key as a string directly:
+## Versioning
 
-``` js
-const key = '-----BEGIN RSA PRIVATE KEY-----\nXXXXXXXXXXX...';
-const { GoogleToken } = require('gtoken');
-const gtoken = new GoogleToken({
-  email: 'my_service_account_email@developer.gserviceaccount.com',
-  scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
-  key: key
-});
-```
+This library follows [Semantic Versioning](http://semver.org/).
 
-## Options
 
-> Various options that can be set when creating initializing the `gtoken` object.
 
-- `options.email or options.iss`: The service account email address.
-- `options.scope`: An array of scope strings or space-delimited string of scopes.
-- `options.sub`: The email address of the user requesting delegated access.
-- `options.keyFile`: The filename of `.json` key, `.pem` key or `.p12` key.
-- `options.key`: The raw RSA private key value, in place of using `options.keyFile`.
 
-### .getToken(callback)
 
-> Returns the cached token or requests a new one and returns it.
 
-``` js
-gtoken.getToken(function(err, token) {
-  console.log(err || token);
-  // gtoken.token value is also set
-});
-```
+More Information: [Google Cloud Platform Launch Stages][launch_stages]
 
-### .getCredentials('path/to/key.json')
+[launch_stages]: https://cloud.google.com/terms/launch-stages
 
-> Given a keyfile, returns the key and (if available) the client email.
+## Contributing
 
-```js
-const creds = await gtoken.getCredentials('path/to/key.json');
-```
-
-### Properties
-
-> Various properties set on the gtoken object after call to `.getToken()`.
-
-- `gtoken.token`: The access token.
-- `gtoken.expiresAt`: The expiry date as milliseconds since 1970/01/01
-- `gtoken.key`: The raw key value.
-- `gtoken.rawToken`: Most recent raw token data received from Google.
-
-### .hasExpired()
-
-> Returns true if the token has expired, or token does not exist.
-
-``` js
-gtoken.getToken(function(err, token) {
-  if(token) {
-    gtoken.hasExpired(); // false
-  }
-});
-```
-
-### .revokeToken()
-
-> Revoke the token if set.
-
-``` js
-gtoken.revokeToken(function(err) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  console.log('Token revoked!');
-});
-```
-
-## Downloading your private `.p12` key from Google
-
-1. Open the [Google Developer Console][gdevconsole].
-2. Open your project and under "APIs & auth", click Credentials.
-3. Generate a new `.p12` key and download it into your project.
-
-## Converting your `.p12` key to a `.pem` key
-
-You can just specify your `.p12` file (with `.p12` extension) as the `keyFile` and it will automatically be converted to a `.pem` on the fly, however this results in a slight performance hit. If you'd like to convert to a `.pem` for use later, use OpenSSL if you have it installed.
-
-``` sh
-$ openssl pkcs12 -in key.p12 -nodes -nocerts > key.pem
-```
-
-Don't forget, the passphrase when converting these files is the string `'notasecret'`
+Contributions welcome! See the [Contributing Guide](https://github.com//blob/master/CONTRIBUTING.md).
 
 ## License
 
-[MIT](https://github.com/googleapis/node-gtoken/blob/master/LICENSE)
+Apache Version 2.0
 
-[codecov-image]: https://codecov.io/gh/googleapis/node-gtoken/branch/master/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/googleapis/node-gtoken
-[david-image]: https://david-dm.org/googleapis/node-gtoken.svg
-[david-url]: https://david-dm.org/googleapis/node-gtoken
-[david-dev-image]: https://david-dm.org/googleapis/node-gtoken/dev-status.svg
-[david-dev-url]: https://david-dm.org/googleapis/node-gtoken?type=dev
-[gdevconsole]: https://console.developers.google.com
-[gts-image]: https://img.shields.io/badge/code%20style-Google%20%E2%98%82%EF%B8%8F-blue.svg
-[gts-url]: https://www.npmjs.com/package/gts
-[npm-image]: https://img.shields.io/npm/v/gtoken.svg
-[npm-url]: https://npmjs.org/package/gtoken
-[snyk-image]: https://snyk.io/test/github/googleapis/node-gtoken/badge.svg
-[snyk-url]: https://snyk.io/test/github/googleapis/node-gtoken
+See [LICENSE](https://github.com//blob/master/LICENSE)
+
+## What's Next
+
+* [ Documentation][product-docs]
+* [  Client API Reference][client-docs]
+* [github.com/](https://github.com/)
+
+Read more about the client libraries for Cloud APIs, including the older
+Google APIs Client Libraries, in [Client Libraries Explained][explained].
+
+[explained]: https://cloud.google.com/apis/docs/client-libraries-explained
+
+[client-docs]: 
+[product-docs]: 
+[shell_img]: https://gstatic.com/cloudssh/images/open-btn.png
+[projects]: https://console.cloud.google.com/project
+[billing]: https://support.google.com/cloud/answer/6293499#enable-billing
+[enable_api]: https://console.cloud.google.com/flows/enableapi?apiid=
+[auth]: https://cloud.google.com/docs/authentication/getting-started
