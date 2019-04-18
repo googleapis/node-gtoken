@@ -11,7 +11,11 @@ import * as jws from 'jws';
 import * as mime from 'mime';
 import * as pify from 'pify';
 
-const readFile = pify(fs.readFile);
+const readFile = fs.readFile ? pify(fs.readFile) : async () => {
+  // if running in the web-browser, fs.readFile may not have been shimmed.
+  throw new ErrorWithCode(
+      'use key rather than keyFile.', 'MISSING_CREDENTIALS');
+};
 
 const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token';
 const GOOGLE_REVOKE_TOKEN_URL =

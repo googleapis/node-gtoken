@@ -404,6 +404,27 @@ describe('.getToken()', () => {
     assert(creds.privateKey);
     assert(creds.clientEmail);
   });
+
+  // see: https://github.com/googleapis/google-api-nodejs-client/issues/1614
+  it('should throw exception if readFile not available, and keyFile provided',
+     async () => {
+       // Fake an environment in which fs.readFile does not
+       // exist. This is the same as when running in the browser.
+       delete require.cache[require.resolve('../src')];
+       delete require.cache[require.resolve('fs')];
+       const fs = require('fs');
+       delete fs.readFile;
+       const {GoogleToken} = require('../src');
+
+       let message;
+       try {
+         const gtoken = new GoogleToken(TESTDATA_KEYFILEJSON);
+         await gtoken.getCredentials(KEYFILEJSON);
+       } catch (err) {
+         message = err.message;
+       }
+       assert.strictEqual(message, 'use key rather than keyFile.');
+     });
 });
 
 function createGetTokenMock(code = 200, body?: {}) {
