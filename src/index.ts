@@ -11,15 +11,19 @@ import * as jws from 'jws';
 import * as mime from 'mime';
 import * as pify from 'pify';
 
-const readFile = fs.readFile ? pify(fs.readFile) : async () => {
-  // if running in the web-browser, fs.readFile may not have been shimmed.
-  throw new ErrorWithCode(
-      'use key rather than keyFile.', 'MISSING_CREDENTIALS');
-};
+const readFile = fs.readFile
+  ? pify(fs.readFile)
+  : async () => {
+      // if running in the web-browser, fs.readFile may not have been shimmed.
+      throw new ErrorWithCode(
+        'use key rather than keyFile.',
+        'MISSING_CREDENTIALS'
+      );
+    };
 
 const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token';
 const GOOGLE_REVOKE_TOKEN_URL =
-    'https://accounts.google.com/o/oauth2/revoke?token=';
+  'https://accounts.google.com/o/oauth2/revoke?token=';
 
 export interface Credentials {
   privateKey: string;
@@ -40,7 +44,7 @@ export interface TokenOptions {
   email?: string;
   iss?: string;
   sub?: string;
-  scope?: string|string[];
+  scope?: string | string[];
   additionalClaims?: {};
 }
 
@@ -50,18 +54,18 @@ class ErrorWithCode extends Error {
   }
 }
 
-let getPem: ((filename: string) => Promise<string>)|undefined;
+let getPem: ((filename: string) => Promise<string>) | undefined;
 
 export class GoogleToken {
-  token?: string|null = null;
-  expiresAt?: number|null = null;
+  token?: string | null = null;
+  expiresAt?: number | null = null;
   key?: string;
   keyFile?: string;
   iss?: string;
   sub?: string;
   scope?: string;
-  rawToken: TokenData|null = null;
-  tokenExpires: number|null = null;
+  rawToken: TokenData | null = null;
+  tokenExpires: number | null = null;
   email?: string;
   additionalClaims?: {};
 
@@ -80,7 +84,7 @@ export class GoogleToken {
    * @return true if the token has expired, false otherwise.
    */
   hasExpired() {
-    const now = (new Date()).getTime();
+    const now = new Date().getTime();
     if (this.token && this.expiresAt) {
       return now >= this.expiresAt;
     } else {
@@ -93,11 +97,13 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  getToken(): Promise<string|null|undefined>;
-  getToken(callback: (err: Error|null, token?: string|null|undefined) => void):
-      void;
-  getToken(callback?: (err: Error|null, token?: string|null|undefined) => void):
-      void|Promise<string|null|undefined> {
+  getToken(): Promise<string | null | undefined>;
+  getToken(
+    callback: (err: Error | null, token?: string | null | undefined) => void
+  ): void;
+  getToken(
+    callback?: (err: Error | null, token?: string | null | undefined) => void
+  ): void | Promise<string | null | undefined> {
     if (callback) {
       this.getTokenAsync().then(t => callback(null, t), callback);
       return;
@@ -121,8 +127,9 @@ export class GoogleToken {
         const clientEmail = body.client_email;
         if (!privateKey || !clientEmail) {
           throw new ErrorWithCode(
-              'private_key and client_email are required.',
-              'MISSING_CREDENTIALS');
+            'private_key and client_email are required.',
+            'MISSING_CREDENTIALS'
+          );
         }
         return {privateKey, clientEmail};
       }
@@ -145,13 +152,14 @@ export class GoogleToken {
       }
       default:
         throw new ErrorWithCode(
-            'Unknown certificate type. Type is determined based on file extension. ' +
-                'Current supported extensions are *.json, *.pem, and *.p12.',
-            'UNKNOWN_CERTIFICATE_TYPE');
+          'Unknown certificate type. Type is determined based on file extension. ' +
+            'Current supported extensions are *.json, *.pem, and *.p12.',
+          'UNKNOWN_CERTIFICATE_TYPE'
+        );
     }
   }
 
-  private async getTokenAsync(): Promise<string|null|undefined> {
+  private async getTokenAsync(): Promise<string | null | undefined> {
     if (!this.hasExpired()) {
       return Promise.resolve(this.token);
     }
@@ -184,7 +192,7 @@ export class GoogleToken {
    */
   revokeToken(): Promise<void>;
   revokeToken(callback: (err?: Error) => void): void;
-  revokeToken(callback?: (err?: Error) => void): void|Promise<void> {
+  revokeToken(callback?: (err?: Error) => void): void | Promise<void> {
     if (callback) {
       this.revokeTokenAsync().then(() => callback(), callback);
       return;
@@ -208,7 +216,6 @@ export class GoogleToken {
     });
   }
 
-
   /**
    * Configure the GoogleToken for re-use.
    * @param  {object} options Configuration object.
@@ -231,50 +238,55 @@ export class GoogleToken {
   /**
    * Request the token from Google.
    */
-  private async requestToken(): Promise<string|null|undefined> {
+  private async requestToken(): Promise<string | null | undefined> {
     const iat = Math.floor(new Date().getTime() / 1000);
     const additionalClaims = this.additionalClaims || {};
     const payload = Object.assign(
-        {
-          iss: this.iss,
-          scope: this.scope,
-          aud: GOOGLE_TOKEN_URL,
-          exp: iat + 3600,
-          iat,
-          sub: this.sub
-        },
-        additionalClaims);
-    const signedJWT =
-        jws.sign({header: {alg: 'RS256'}, payload, secret: this.key});
+      {
+        iss: this.iss,
+        scope: this.scope,
+        aud: GOOGLE_TOKEN_URL,
+        exp: iat + 3600,
+        iat,
+        sub: this.sub,
+      },
+      additionalClaims
+    );
+    const signedJWT = jws.sign({
+      header: {alg: 'RS256'},
+      payload,
+      secret: this.key,
+    });
     return request<TokenData>({
-             method: 'POST',
-             url: GOOGLE_TOKEN_URL,
-             data: {
-               grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-               assertion: signedJWT
-             },
-             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-             responseType: 'json'
-           })
-        .then(r => {
-          this.rawToken = r.data;
-          this.token = r.data.access_token;
-          this.expiresAt =
-              (r.data.expires_in === null || r.data.expires_in === undefined) ?
-              null :
-              (iat + r.data.expires_in!) * 1000;
-          return this.token;
-        })
-        .catch(e => {
-          this.token = null;
-          this.tokenExpires = null;
-          const body = (e.response && e.response.data) ? e.response.data : {};
-          if (body.error) {
-            const desc =
-                body.error_description ? `: ${body.error_description}` : '';
-            e.message = `${body.error}${desc}`;
-          }
-          throw e;
-        });
+      method: 'POST',
+      url: GOOGLE_TOKEN_URL,
+      data: {
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: signedJWT,
+      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      responseType: 'json',
+    })
+      .then(r => {
+        this.rawToken = r.data;
+        this.token = r.data.access_token;
+        this.expiresAt =
+          r.data.expires_in === null || r.data.expires_in === undefined
+            ? null
+            : (iat + r.data.expires_in!) * 1000;
+        return this.token;
+      })
+      .catch(e => {
+        this.token = null;
+        this.tokenExpires = null;
+        const body = e.response && e.response.data ? e.response.data : {};
+        if (body.error) {
+          const desc = body.error_description
+            ? `: ${body.error_description}`
+            : '';
+          e.message = `${body.error}${desc}`;
+        }
+        throw e;
+      });
   }
 }

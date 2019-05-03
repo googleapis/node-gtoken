@@ -19,50 +19,53 @@ const KEYFILENOEMAILJSON = './test/assets/key-no-email.json';
 const KEYCONTENTS = fs.readFileSync(KEYFILE, 'utf8');
 const KEYJSONCONTENTS = fs.readFileSync(KEYFILEJSON, 'utf8');
 const GOOGLE_TOKEN_URLS = ['https://www.googleapis.com', '/oauth2/v4/token'];
-const GOOGLE_REVOKE_TOKEN_URLS =
-    ['https://accounts.google.com', '/o/oauth2/revoke', '?token='];
+const GOOGLE_REVOKE_TOKEN_URLS = [
+  'https://accounts.google.com',
+  '/o/oauth2/revoke',
+  '?token=',
+];
 
 const TESTDATA = {
   email: 'email@developer.gserviceaccount.com',
-  scope: 'scope123',  // or space-delimited string of scopes
-  key: KEYCONTENTS
+  scope: 'scope123', // or space-delimited string of scopes
+  key: KEYCONTENTS,
 };
 
 const TESTDATA_KEYFILE = {
   email: 'email@developer.gserviceaccount.com',
   sub: 'developer@gmail.com',
-  scope: 'scope123',  // or space-delimited string of scopes
-  keyFile: KEYFILE
+  scope: 'scope123', // or space-delimited string of scopes
+  keyFile: KEYFILE,
 };
 
 const TESTDATA_UNKNOWN = {
-  keyFile: UNKNOWN_KEYFILE
+  keyFile: UNKNOWN_KEYFILE,
 };
 
 const TESTDATA_KEYFILENOEMAIL = {
-  scope: 'scope123',  // or space-delimited string of scopes
-  keyFile: KEYFILE
+  scope: 'scope123', // or space-delimited string of scopes
+  keyFile: KEYFILE,
 };
 
 const TESTDATA_KEYFILEJSON = {
-  scope: 'scope123',  // or space-delimited string of scopes
-  keyFile: KEYFILEJSON
+  scope: 'scope123', // or space-delimited string of scopes
+  keyFile: KEYFILEJSON,
 };
 
 const TESTDATA_KEYFILENOEMAILJSON = {
-  scope: 'scope123',  // or space-delimited string of scopes
-  keyFile: KEYFILENOEMAILJSON
+  scope: 'scope123', // or space-delimited string of scopes
+  keyFile: KEYFILENOEMAILJSON,
 };
 
 const TESTDATA_P12 = {
   email: 'email@developer.gserviceaccount.com',
-  scope: 'scope123',  // or space-delimited string of scopes
-  keyFile: P12FILE
+  scope: 'scope123', // or space-delimited string of scopes
+  keyFile: P12FILE,
 };
 
 const TESTDATA_P12_NO_EMAIL = {
-  scope: 'scope123',  // or space-delimited string of scopes
-  keyFile: P12FILE
+  scope: 'scope123', // or space-delimited string of scopes
+  keyFile: P12FILE,
 };
 
 nock.disableNetConnect();
@@ -122,11 +125,11 @@ describe('.hasExpired()', () => {
     assert(gtoken.hasExpired(), 'should be expired without token');
     gtoken.token = 'hello';
     assert(gtoken.hasExpired(), 'should be expired without expires_at');
-    gtoken.expiresAt = (new Date().getTime()) + 10000;
+    gtoken.expiresAt = new Date().getTime() + 10000;
     assert(!gtoken.hasExpired(), 'shouldnt be expired with future date');
-    gtoken.expiresAt = (new Date().getTime()) - 10000;
+    gtoken.expiresAt = new Date().getTime() - 10000;
     assert(gtoken.hasExpired(), 'should be expired with past date');
-    gtoken.expiresAt = (new Date().getTime()) + 10000;
+    gtoken.expiresAt = new Date().getTime() + 10000;
     gtoken.token = null;
     assert(gtoken.hasExpired(), 'should be expired with no token');
   });
@@ -225,7 +228,9 @@ describe('.getToken()', () => {
       assert(err);
       if (err) {
         assert.strictEqual(
-            (err as NodeJS.ErrnoException).code, 'MISSING_CREDENTIALS');
+          (err as NodeJS.ErrnoException).code,
+          'MISSING_CREDENTIALS'
+        );
         done();
       }
     });
@@ -253,8 +258,9 @@ describe('.getToken()', () => {
   });
 
   it('should accept additional claims', async () => {
-    const opts = Object.assign(
-        TESTDATA_KEYFILE, {additionalClaims: {fancyClaim: 'isFancy'}});
+    const opts = Object.assign(TESTDATA_KEYFILE, {
+      additionalClaims: {fancyClaim: 'isFancy'},
+    });
     const gtoken = new GoogleToken(opts);
     const scope = createGetTokenMock();
     const token = await gtoken.getToken();
@@ -268,7 +274,9 @@ describe('.getToken()', () => {
       assert(err);
       if (err) {
         assert.strictEqual(
-            (err as NodeJS.ErrnoException).code, 'MISSING_CREDENTIALS');
+          (err as NodeJS.ErrnoException).code,
+          'MISSING_CREDENTIALS'
+        );
         done();
       }
     });
@@ -300,7 +308,9 @@ describe('.getToken()', () => {
       assert(err);
       if (err) {
         assert.strictEqual(
-            (err as NodeJS.ErrnoException).code, 'MISSING_CREDENTIALS');
+          (err as NodeJS.ErrnoException).code,
+          'MISSING_CREDENTIALS'
+        );
         done();
       }
     });
@@ -312,7 +322,9 @@ describe('.getToken()', () => {
       assert(err);
       if (err) {
         assert.strictEqual(
-            (err as NodeJS.ErrnoException).code, 'UNKNOWN_CERTIFICATE_TYPE');
+          (err as NodeJS.ErrnoException).code,
+          'UNKNOWN_CERTIFICATE_TYPE'
+        );
         done();
       }
     });
@@ -322,7 +334,7 @@ describe('.getToken()', () => {
     it('should be run with correct options', done => {
       const gtoken = new GoogleToken(TESTDATA);
       const fakeToken = 'nodeftw';
-      const scope = createGetTokenMock(200, {'access_token': fakeToken});
+      const scope = createGetTokenMock(200, {access_token: fakeToken});
       gtoken.getToken((err, token) => {
         scope.done();
         assert.strictEqual(err, null);
@@ -336,7 +348,7 @@ describe('.getToken()', () => {
       const RESPBODY = {
         access_token: 'accesstoken123',
         expires_in: 3600,
-        token_type: 'Bearer'
+        token_type: 'Bearer',
       };
       const scope = createGetTokenMock(200, RESPBODY);
       gtoken.getToken((err, token) => {
@@ -347,8 +359,8 @@ describe('.getToken()', () => {
         assert.strictEqual(err, null);
         assert(gtoken.expiresAt);
         if (gtoken.expiresAt) {
-          assert(gtoken.expiresAt >= (new Date()).getTime());
-          assert(gtoken.expiresAt <= (new Date()).getTime() + (3600 * 1000));
+          assert(gtoken.expiresAt >= new Date().getTime());
+          assert(gtoken.expiresAt <= new Date().getTime() + 3600 * 1000);
         }
         done();
       });
@@ -406,42 +418,43 @@ describe('.getToken()', () => {
   });
 
   // see: https://github.com/googleapis/google-api-nodejs-client/issues/1614
-  it('should throw exception if readFile not available, and keyFile provided',
-     async () => {
-       // Fake an environment in which fs.readFile does not
-       // exist. This is the same as when running in the browser.
-       delete require.cache[require.resolve('../src')];
-       delete require.cache[require.resolve('fs')];
-       const fs = require('fs');
-       delete fs.readFile;
-       const {GoogleToken} = require('../src');
+  it('should throw exception if readFile not available, and keyFile provided', async () => {
+    // Fake an environment in which fs.readFile does not
+    // exist. This is the same as when running in the browser.
+    delete require.cache[require.resolve('../src')];
+    delete require.cache[require.resolve('fs')];
+    const fs = require('fs');
+    delete fs.readFile;
+    const {GoogleToken} = require('../src');
 
-       let message;
-       try {
-         const gtoken = new GoogleToken(TESTDATA_KEYFILEJSON);
-         await gtoken.getCredentials(KEYFILEJSON);
-       } catch (err) {
-         message = err.message;
-       }
-       assert.strictEqual(message, 'use key rather than keyFile.');
-     });
+    let message;
+    try {
+      const gtoken = new GoogleToken(TESTDATA_KEYFILEJSON);
+      await gtoken.getCredentials(KEYFILEJSON);
+    } catch (err) {
+      message = err.message;
+    }
+    assert.strictEqual(message, 'use key rather than keyFile.');
+  });
 });
 
 function createGetTokenMock(code = 200, body?: {}) {
   return nock(GOOGLE_TOKEN_URLS[0])
-      .replyContentLength()
-      .post(
-          GOOGLE_TOKEN_URLS[1], {
-            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            assertion: /.?/
-          },
-          {reqheaders: {'Content-Type': 'application/x-www-form-urlencoded'}})
-      .reply(code, body);
+    .replyContentLength()
+    .post(
+      GOOGLE_TOKEN_URLS[1],
+      {
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: /.?/,
+      },
+      {reqheaders: {'Content-Type': 'application/x-www-form-urlencoded'}}
+    )
+    .reply(code, body);
 }
 
 function createRevokeMock(token: string, code = 200) {
   return nock(GOOGLE_REVOKE_TOKEN_URLS[0])
-      .get(GOOGLE_REVOKE_TOKEN_URLS[1])
-      .query({token})
-      .reply(code);
+    .get(GOOGLE_REVOKE_TOKEN_URLS[1])
+    .query({token})
+    .reply(code);
 }
