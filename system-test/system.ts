@@ -12,7 +12,7 @@ import {GoogleToken} from '../src';
 describe('gtoken system tests', () => {
   const gtoken = new GoogleToken({
     keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-    scope: 'https://www.googleapis.com/auth/cloud-platform'
+    scope: 'https://www.googleapis.com/auth/cloud-platform',
   });
 
   it('should acquire a token', async () => {
