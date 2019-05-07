@@ -4,6 +4,25 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [3.0.0](https://www.github.com/googleapis/node-gtoken/compare/v2.3.3...v3.0.0) (2019-05-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency gaxios to v2 ([#191](https://www.github.com/googleapis/node-gtoken/issues/191)) ([da65ea7](https://www.github.com/googleapis/node-gtoken/commit/da65ea7))
+* **deps:** update dependency google-p12-pem to v2 ([#196](https://www.github.com/googleapis/node-gtoken/issues/196)) ([b510f06](https://www.github.com/googleapis/node-gtoken/commit/b510f06))
+* fs.readFile does not exist in browser ([#186](https://www.github.com/googleapis/node-gtoken/issues/186)) ([a16d8e7](https://www.github.com/googleapis/node-gtoken/commit/a16d8e7))
+
+
+### Build System
+
+* upgrade engines field to >=8.10.0 ([#194](https://www.github.com/googleapis/node-gtoken/issues/194)) ([ee4d6c8](https://www.github.com/googleapis/node-gtoken/commit/ee4d6c8))
+
+
+### BREAKING CHANGES
+
+* upgrade engines field to >=8.10.0 (#194)
+
 ## v2.3.3
 
 03-13-2019 14:54 PDT
@@ -110,4 +129,3 @@ Breaking changes:
 - `GoogleToken.expires_at` renamed to `GoogleToken.expiresAt`
 - `GoogleToken.raw_token` renamed to `GoogleToken.rawToken`
 - `GoogleToken.token_expires` renamed to `GoogleToken.tokenExpires`
-
