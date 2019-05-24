@@ -9,10 +9,10 @@ import * as fs from 'fs';
 import {request} from 'gaxios';
 import * as jws from 'jws';
 import * as mime from 'mime';
-import * as pify from 'pify';
+import {promisify} from 'util';
 
 const readFile = fs.readFile
-  ? pify(fs.readFile)
+  ? promisify(fs.readFile)
   : async () => {
       // if running in the web-browser, fs.readFile may not have been shimmed.
       throw new ErrorWithCode(
