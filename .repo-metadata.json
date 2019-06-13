@@ -4,5 +4,6 @@
   "release_level": "ga",
   "language": "nodejs",
   "repo": "googleapis/node-gtoken",
-  "distribution_name": "gtoken"
+  "distribution_name": "gtoken",
+  "client_documentation": "https://googleapis.dev/nodejs/gtoken/latest"
 }
