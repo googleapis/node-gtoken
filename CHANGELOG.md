@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [3.0.1](https://www.github.com/googleapis/node-gtoken/compare/v3.0.0...v3.0.1) (2019-06-13)
+
+
+### Bug Fixes
+
+* **docs:** move to new client docs URL ([#212](https://www.github.com/googleapis/node-gtoken/issues/212)) ([b7a8c75](https://www.github.com/googleapis/node-gtoken/commit/b7a8c75))
+
 ## [3.0.0](https://www.github.com/googleapis/node-gtoken/compare/v2.3.3...v3.0.0) (2019-05-07)
 
 
