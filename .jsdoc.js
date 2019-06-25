@@ -41,5 +41,8 @@ module.exports = {
     sourceFiles: false,
     systemName: 'gtoken',
     theme: 'lumen'
+  },
+  markdown: {
+    idInHeadings: true
   }
 };
