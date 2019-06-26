@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [3.0.2](https://www.github.com/googleapis/node-gtoken/compare/v3.0.1...v3.0.2) (2019-06-26)
+
+
+### Bug Fixes
+
+* **docs:** make anchors work in jsdoc ([#215](https://www.github.com/googleapis/node-gtoken/issues/215)) ([c5f6c89](https://www.github.com/googleapis/node-gtoken/commit/c5f6c89))
+
 ### [3.0.1](https://www.github.com/googleapis/node-gtoken/compare/v3.0.0...v3.0.1) (2019-06-13)
 
 
