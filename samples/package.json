@@ -11,7 +11,7 @@
     "test": "mocha system-test"
   },
   "dependencies": {
-    "gtoken": "^3.0.1"
+    "gtoken": "^3.0.2"
   },
   "devDependencies": {
     "mocha": "^6.0.0"
