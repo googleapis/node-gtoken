@@ -343,6 +343,25 @@ describe('.getToken()', () => {
     });
   });
 
+  it('should expose token response as getters', async () => {
+    const idToken = '🧼';
+    const tokenType = '😳';
+    const refreshToken = '🤮';
+    const gtoken = new GoogleToken(TESTDATA_KEYFILEJSON);
+    gtoken.rawToken = {};
+    assert.strictEqual(gtoken.idToken, undefined);
+    assert.strictEqual(gtoken.tokenType, undefined);
+    assert.strictEqual(gtoken.refreshToken, undefined);
+    gtoken.rawToken = {
+      id_token: idToken,
+      token_type: tokenType,
+      refresh_token: refreshToken,
+    };
+    assert.strictEqual(idToken, gtoken.idToken);
+    assert.strictEqual(tokenType, gtoken.tokenType);
+    assert.strictEqual(refreshToken, gtoken.refreshToken);
+  });
+
   describe('request', () => {
     it('should be run with correct options', done => {
       const gtoken = new GoogleToken(TESTDATA);
