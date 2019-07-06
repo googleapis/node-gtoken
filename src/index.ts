@@ -25,6 +25,8 @@ const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token';
 const GOOGLE_REVOKE_TOKEN_URL =
   'https://accounts.google.com/o/oauth2/revoke?token=';
 
+export type GetTokenCallback = (err: Error | null, token?: TokenData) => void;
+
 export interface Credentials {
   privateKey: string;
   clientEmail?: string;
@@ -57,15 +59,26 @@ class ErrorWithCode extends Error {
 let getPem: ((filename: string) => Promise<string>) | undefined;
 
 export class GoogleToken {
-  token?: string | null = null;
-  expiresAt?: number | null = null;
+  get accessToken() {
+    return this.rawToken ? this.rawToken.access_token : undefined;
+  }
+  get idToken() {
+    return this.rawToken ? this.rawToken.id_token : undefined;
+  }
+  get tokenType() {
+    return this.rawToken ? this.rawToken.token_type : undefined;
+  }
+  get refreshToken() {
+    return this.rawToken ? this.rawToken.refresh_token : undefined;
+  }
+  expiresAt?: number;
   key?: string;
   keyFile?: string;
   iss?: string;
   sub?: string;
   scope?: string;
-  rawToken: TokenData | null = null;
-  tokenExpires: number | null = null;
+  rawToken?: TokenData;
+  tokenExpires?: number;
   email?: string;
   additionalClaims?: {};
 
@@ -85,7 +98,7 @@ export class GoogleToken {
    */
   hasExpired() {
     const now = new Date().getTime();
-    if (this.token && this.expiresAt) {
+    if (this.rawToken && this.expiresAt) {
       return now >= this.expiresAt;
     } else {
       return true;
@@ -97,13 +110,9 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  getToken(): Promise<string | null | undefined>;
-  getToken(
-    callback: (err: Error | null, token?: string | null | undefined) => void
-  ): void;
-  getToken(
-    callback?: (err: Error | null, token?: string | null | undefined) => void
-  ): void | Promise<string | null | undefined> {
+  getToken(): Promise<TokenData>;
+  getToken(callback: GetTokenCallback): void;
+  getToken(callback?: GetTokenCallback): void | Promise<TokenData> {
     if (callback) {
       this.getTokenAsync().then(t => callback(null, t), callback);
       return;
@@ -159,9 +168,9 @@ export class GoogleToken {
     }
   }
 
-  private async getTokenAsync(): Promise<string | null | undefined> {
+  private async getTokenAsync(): Promise<TokenData> {
     if (!this.hasExpired()) {
-      return Promise.resolve(this.token);
+      return Promise.resolve(this.rawToken!);
     }
 
     if (!this.key && !this.keyFile) {
@@ -201,18 +210,18 @@ export class GoogleToken {
   }
 
   private async revokeTokenAsync() {
-    if (!this.token) {
+    if (!this.accessToken) {
       throw new Error('No token to revoke.');
     }
-    return request({url: GOOGLE_REVOKE_TOKEN_URL + this.token}).then(r => {
-      this.configure({
-        email: this.iss,
-        sub: this.sub,
-        key: this.key,
-        keyFile: this.keyFile,
-        scope: this.scope,
-        additionalClaims: this.additionalClaims,
-      });
+    const url = GOOGLE_REVOKE_TOKEN_URL + this.accessToken;
+    await request({url});
+    this.configure({
+      email: this.iss,
+      sub: this.sub,
+      key: this.key,
+      keyFile: this.keyFile,
+      scope: this.scope,
+      additionalClaims: this.additionalClaims,
     });
   }
 
@@ -223,11 +232,10 @@ export class GoogleToken {
   private configure(options: TokenOptions = {}) {
     this.keyFile = options.keyFile;
     this.key = options.key;
-    this.token = this.expiresAt = this.rawToken = null;
+    this.rawToken = undefined;
     this.iss = options.email || options.iss;
     this.sub = options.sub;
     this.additionalClaims = options.additionalClaims;
-
     if (typeof options.scope === 'object') {
       this.scope = options.scope.join(' ');
     } else {
@@ -238,7 +246,7 @@ export class GoogleToken {
   /**
    * Request the token from Google.
    */
-  private async requestToken(): Promise<string | null | undefined> {
+  private async requestToken(): Promise<TokenData> {
     const iat = Math.floor(new Date().getTime() / 1000);
     const additionalClaims = this.additionalClaims || {};
     const payload = Object.assign(
@@ -257,36 +265,34 @@ export class GoogleToken {
       payload,
       secret: this.key,
     });
-    return request<TokenData>({
-      method: 'POST',
-      url: GOOGLE_TOKEN_URL,
-      data: {
-        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        assertion: signedJWT,
-      },
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      responseType: 'json',
-    })
-      .then(r => {
-        this.rawToken = r.data;
-        this.token = r.data.access_token;
-        this.expiresAt =
-          r.data.expires_in === null || r.data.expires_in === undefined
-            ? null
-            : (iat + r.data.expires_in!) * 1000;
-        return this.token;
-      })
-      .catch(e => {
-        this.token = null;
-        this.tokenExpires = null;
-        const body = e.response && e.response.data ? e.response.data : {};
-        if (body.error) {
-          const desc = body.error_description
-            ? `: ${body.error_description}`
-            : '';
-          e.message = `${body.error}${desc}`;
-        }
-        throw e;
+    try {
+      const r = await request<TokenData>({
+        method: 'POST',
+        url: GOOGLE_TOKEN_URL,
+        data: {
+          grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+          assertion: signedJWT,
+        },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        responseType: 'json',
       });
+      this.rawToken = r.data;
+      this.expiresAt =
+        r.data.expires_in === null || r.data.expires_in === undefined
+          ? undefined
+          : (iat + r.data.expires_in!) * 1000;
+      return this.rawToken;
+    } catch (e) {
+      this.rawToken = undefined;
+      this.tokenExpires = undefined;
+      const body = e.response && e.response.data ? e.response.data : {};
+      if (body.error) {
+        const desc = body.error_description
+          ? `: ${body.error_description}`
+          : '';
+        e.message = `${body.error}${desc}`;
+      }
+      throw e;
+    }
   }
 }
