@@ -123,14 +123,16 @@ describe('.hasExpired()', () => {
   it('should detect expired tokens', () => {
     const gtoken = new GoogleToken();
     assert(gtoken.hasExpired(), 'should be expired without token');
-    gtoken.token = 'hello';
+    gtoken.rawToken = {
+      access_token: 'hello',
+    };
     assert(gtoken.hasExpired(), 'should be expired without expires_at');
     gtoken.expiresAt = new Date().getTime() + 10000;
     assert(!gtoken.hasExpired(), 'shouldnt be expired with future date');
     gtoken.expiresAt = new Date().getTime() - 10000;
     assert(gtoken.hasExpired(), 'should be expired with past date');
     gtoken.expiresAt = new Date().getTime() + 10000;
-    gtoken.token = null;
+    gtoken.rawToken = undefined;
     assert(gtoken.hasExpired(), 'should be expired with no token');
   });
 });
@@ -145,9 +147,11 @@ describe('.revokeToken()', () => {
     const token = 'w00t';
     const scope = createRevokeMock(token);
     const gtoken = new GoogleToken();
-    gtoken.token = token;
+    gtoken.rawToken = {
+      access_token: token,
+    };
     gtoken.revokeToken(err => {
-      assert.strictEqual(gtoken.token, null);
+      assert.strictEqual(gtoken.accessToken, undefined);
       scope.done();
       done();
     });
@@ -157,7 +161,9 @@ describe('.revokeToken()', () => {
     const token = 'w00t';
     const scope = createRevokeMock(token, 404);
     const gtoken = new GoogleToken();
-    gtoken.token = token;
+    gtoken.rawToken = {
+      access_token: token,
+    };
     gtoken.revokeToken(err => {
       assert(err);
       scope.done();
@@ -168,17 +174,20 @@ describe('.revokeToken()', () => {
   it('should run accept config properties with async', async () => {
     const token = 'w00t';
     const scope = createRevokeMock(token);
-
     const gtoken = new GoogleToken();
-    gtoken.token = token;
+    gtoken.rawToken = {
+      access_token: token,
+    };
     await gtoken.revokeToken();
-    assert.strictEqual(gtoken.token, null);
+    assert.strictEqual(gtoken.accessToken, undefined);
     scope.done();
   });
 
   it('should return error when no token set', done => {
     const gtoken = new GoogleToken();
-    gtoken.token = null;
+    gtoken.rawToken = {
+      access_token: undefined,
+    };
     gtoken.revokeToken(err => {
       assert(err && err.message);
       done();
@@ -187,7 +196,9 @@ describe('.revokeToken()', () => {
 
   it('should return error when no token set with async', async () => {
     const gtoken = new GoogleToken();
-    gtoken.token = null;
+    gtoken.rawToken = {
+      access_token: undefined,
+    };
     let err;
     try {
       await gtoken.revokeToken();
@@ -284,10 +295,12 @@ describe('.getToken()', () => {
 
   it('should return cached token if not expired', done => {
     const gtoken = new GoogleToken(TESTDATA);
-    gtoken.token = 'mytoken';
+    gtoken.rawToken = {
+      access_token: 'mytoken',
+    };
     gtoken.expiresAt = new Date().getTime() + 10000;
     gtoken.getToken((err, token) => {
-      assert.strictEqual(token, 'mytoken');
+      assert.strictEqual(token!.access_token, 'mytoken');
       done();
     });
   });
@@ -330,6 +343,25 @@ describe('.getToken()', () => {
     });
   });
 
+  it('should expose token response as getters', async () => {
+    const idToken = '🧼';
+    const tokenType = '😳';
+    const refreshToken = '🤮';
+    const gtoken = new GoogleToken(TESTDATA_KEYFILEJSON);
+    gtoken.rawToken = {};
+    assert.strictEqual(gtoken.idToken, undefined);
+    assert.strictEqual(gtoken.tokenType, undefined);
+    assert.strictEqual(gtoken.refreshToken, undefined);
+    gtoken.rawToken = {
+      id_token: idToken,
+      token_type: tokenType,
+      refresh_token: refreshToken,
+    };
+    assert.strictEqual(idToken, gtoken.idToken);
+    assert.strictEqual(tokenType, gtoken.tokenType);
+    assert.strictEqual(refreshToken, gtoken.refreshToken);
+  });
+
   describe('request', () => {
     it('should be run with correct options', done => {
       const gtoken = new GoogleToken(TESTDATA);
@@ -338,7 +370,7 @@ describe('.getToken()', () => {
       gtoken.getToken((err, token) => {
         scope.done();
         assert.strictEqual(err, null);
-        assert.strictEqual(token, fakeToken);
+        assert.strictEqual(token!.access_token, fakeToken);
         done();
       });
     });
@@ -354,8 +386,8 @@ describe('.getToken()', () => {
       gtoken.getToken((err, token) => {
         scope.done();
         assert.deepStrictEqual(gtoken.rawToken, RESPBODY);
-        assert.strictEqual(gtoken.token, 'accesstoken123');
-        assert.strictEqual(gtoken.token, token);
+        assert.strictEqual(gtoken.accessToken, 'accesstoken123');
+        assert.deepStrictEqual(gtoken.rawToken, token);
         assert.strictEqual(err, null);
         assert(gtoken.expiresAt);
         if (gtoken.expiresAt) {
@@ -373,10 +405,10 @@ describe('.getToken()', () => {
       gtoken.getToken((err, token) => {
         scope.done();
         assert(err);
-        assert.strictEqual(gtoken.rawToken, null);
-        assert.strictEqual(gtoken.token, null);
+        assert.strictEqual(gtoken.rawToken, undefined);
+        assert.strictEqual(gtoken.accessToken, undefined);
         if (err) assert.strictEqual(err.message, ERROR);
-        assert.strictEqual(gtoken.expiresAt, null);
+        assert.strictEqual(gtoken.expiresAt, undefined);
         done();
       });
     });
