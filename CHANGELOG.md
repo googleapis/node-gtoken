@@ -4,6 +4,31 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [4.0.0](https://www.github.com/googleapis/node-gtoken/compare/v3.0.2...v4.0.0) (2019-07-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* This commit creates multiple breaking changes. The `getToken()`
+method previously returned `Promise<string>`, where the string was the
+`access_token` returned from the response.  However, the `oauth2` endpoint could
+return a variety of other fields, such as an `id_token` in special cases.
+
+```js
+const token = await getToken();
+// old response: 'some.access.token'
+// new response: { access_token: 'some.access.token'}
+```
+
+To further support this change, the `GoogleToken` class no longer exposes
+a `token` variable.  It now exposes `rawToken`, `accessToken`, and `idToken`
+fields which can be used to access the relevant values returned in the
+response.
+
+### Bug Fixes
+
+* expose all fields from response ([#218](https://www.github.com/googleapis/node-gtoken/issues/218)) ([d463370](https://www.github.com/googleapis/node-gtoken/commit/d463370))
+
 ### [3.0.2](https://www.github.com/googleapis/node-gtoken/compare/v3.0.1...v3.0.2) (2019-06-26)
 
 
