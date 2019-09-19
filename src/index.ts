@@ -111,13 +111,25 @@ export class GoogleToken {
    * @param callback The callback function.
    */
   getToken(): Promise<TokenData>;
-  getToken(callback: GetTokenCallback): void;
-  getToken(callback?: GetTokenCallback): void | Promise<TokenData> {
+  getToken(callback: boolean): Promise<TokenData>;
+  getToken(callback: GetTokenCallback, forceRefresh?: boolean): void;
+  getToken(
+    callback?: GetTokenCallback | boolean,
+    forceRefresh = false
+  ): void | Promise<TokenData> {
+    // if the first parameter to `getToken` is boolean, we assume it's
+    // the forceRefresh parameter.
+    if (typeof callback === 'boolean') {
+      forceRefresh = callback;
+      callback = undefined;
+    }
+
     if (callback) {
-      this.getTokenAsync().then(t => callback(null, t), callback);
+      const cb = callback as GetTokenCallback;
+      this.getTokenAsync(forceRefresh).then(t => cb(null, t), callback);
       return;
     }
-    return this.getTokenAsync();
+    return this.getTokenAsync(forceRefresh);
   }
 
   /**
@@ -168,8 +180,8 @@ export class GoogleToken {
     }
   }
 
-  private async getTokenAsync(): Promise<TokenData> {
-    if (!this.hasExpired()) {
+  private async getTokenAsync(forceRefresh = false): Promise<TokenData> {
+    if (this.hasExpired() === false && forceRefresh === false) {
       return Promise.resolve(this.rawToken!);
     }
 
