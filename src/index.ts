@@ -114,7 +114,10 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  getToken(callback?: GetTokenOptions, opts?: GetTokenOptions): Promise<TokenData>;
+  getToken(
+    callback?: GetTokenOptions,
+    opts?: GetTokenOptions
+  ): Promise<TokenData>;
   getToken(callback: GetTokenCallback, opts?: GetTokenOptions): void;
   getToken(
     callback?: GetTokenCallback | GetTokenOptions,
