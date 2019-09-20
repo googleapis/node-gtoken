@@ -50,6 +50,10 @@ export interface TokenOptions {
   additionalClaims?: {};
 }
 
+export interface GetTokenOptions {
+  forceRefresh?: boolean;
+}
+
 class ErrorWithCode extends Error {
   constructor(message: string, public code: string) {
     super(message);
@@ -110,26 +114,29 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  getToken(): Promise<TokenData>;
-  getToken(callback: boolean): Promise<TokenData>;
-  getToken(callback: GetTokenCallback, forceRefresh?: boolean): void;
+  getToken(callback?: GetTokenOptions): Promise<TokenData>;
+  getToken(callback: GetTokenCallback, opts?: GetTokenOptions): void;
   getToken(
-    callback?: GetTokenCallback | boolean,
-    forceRefresh = false
+    callback?: GetTokenCallback | GetTokenOptions,
+    opts = {} as GetTokenOptions
   ): void | Promise<TokenData> {
-    // if the first parameter to `getToken` is boolean, we assume it's
-    // the forceRefresh parameter.
-    if (typeof callback === 'boolean') {
-      forceRefresh = callback;
+    if (typeof callback === 'object') {
+      opts = callback as GetTokenOptions;
       callback = undefined;
     }
+    opts = Object.assign(
+      {
+        forceRefresh: false,
+      },
+      opts
+    );
 
     if (callback) {
       const cb = callback as GetTokenCallback;
-      this.getTokenAsync(forceRefresh).then(t => cb(null, t), callback);
+      this.getTokenAsync(opts).then(t => cb(null, t), callback);
       return;
     }
-    return this.getTokenAsync(forceRefresh);
+    return this.getTokenAsync(opts);
   }
 
   /**
@@ -180,8 +187,8 @@ export class GoogleToken {
     }
   }
 
-  private async getTokenAsync(forceRefresh = false): Promise<TokenData> {
-    if (this.hasExpired() === false && forceRefresh === false) {
+  private async getTokenAsync(opts: GetTokenOptions): Promise<TokenData> {
+    if (this.hasExpired() === false && opts.forceRefresh === false) {
       return Promise.resolve(this.rawToken!);
     }
 

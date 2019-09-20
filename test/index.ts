@@ -313,8 +313,8 @@ describe('.getToken()', () => {
     gtoken.expiresAt = new Date().getTime() + 10000;
     const fakeToken = 'abc123';
     const scope = createGetTokenMock(200, {access_token: fakeToken});
-    const token = await gtoken.getToken(true);
-    assert.strictEqual(token.access_token, 'abc123');
+    const token = await gtoken.getToken({forceRefresh: true});
+    assert.strictEqual(token.access_token, fakeToken);
   });
 
   it('should not use cached token if forceRefresh=true (cb)', done => {
@@ -325,10 +325,14 @@ describe('.getToken()', () => {
     gtoken.expiresAt = new Date().getTime() + 10000;
     const fakeToken = 'qwerty';
     const scope = createGetTokenMock(200, {access_token: fakeToken});
-    gtoken.getToken((err, token) => {
-      assert.strictEqual(token!.access_token, 'qwerty');
-      done();
-    }, true);
+    gtoken.getToken(
+      (err, token) => {
+        assert.ifError(err);
+        assert.strictEqual(token!.access_token, fakeToken);
+        done();
+      },
+      {forceRefresh: true}
+    );
   });
 
   it('should run gp12pem if .p12 file is given', done => {
