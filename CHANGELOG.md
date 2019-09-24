@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [4.1.0](https://www.github.com/googleapis/node-gtoken/compare/v4.0.0...v4.1.0) (2019-09-24)
+
+
+### Features
+
+* allow upstream libraries to force token refresh ([#229](https://www.github.com/googleapis/node-gtoken/issues/229)) ([1fd4dd1](https://www.github.com/googleapis/node-gtoken/commit/1fd4dd1))
+
 ## [4.0.0](https://www.github.com/googleapis/node-gtoken/compare/v3.0.2...v4.0.0) (2019-07-09)
 
 
