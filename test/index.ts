@@ -305,6 +305,36 @@ describe('.getToken()', () => {
     });
   });
 
+  it('should not use cached token if forceRefresh=true (promise)', async () => {
+    const gtoken = new GoogleToken(TESTDATA);
+    gtoken.rawToken = {
+      access_token: 'mytoken',
+    };
+    gtoken.expiresAt = new Date().getTime() + 10000;
+    const fakeToken = 'abc123';
+    const scope = createGetTokenMock(200, {access_token: fakeToken});
+    const token = await gtoken.getToken({forceRefresh: true});
+    assert.strictEqual(token.access_token, fakeToken);
+  });
+
+  it('should not use cached token if forceRefresh=true (cb)', done => {
+    const gtoken = new GoogleToken(TESTDATA);
+    gtoken.rawToken = {
+      access_token: 'mytoken',
+    };
+    gtoken.expiresAt = new Date().getTime() + 10000;
+    const fakeToken = 'qwerty';
+    const scope = createGetTokenMock(200, {access_token: fakeToken});
+    gtoken.getToken(
+      (err, token) => {
+        assert.ifError(err);
+        assert.strictEqual(token!.access_token, fakeToken);
+        done();
+      },
+      {forceRefresh: true}
+    );
+  });
+
   it('should run gp12pem if .p12 file is given', done => {
     const gtoken = new GoogleToken(TESTDATA_P12);
     const scope = createGetTokenMock();

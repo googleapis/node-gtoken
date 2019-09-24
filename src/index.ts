@@ -50,6 +50,10 @@ export interface TokenOptions {
   additionalClaims?: {};
 }
 
+export interface GetTokenOptions {
+  forceRefresh?: boolean;
+}
+
 class ErrorWithCode extends Error {
   constructor(message: string, public code: string) {
     super(message);
@@ -110,14 +114,29 @@ export class GoogleToken {
    *
    * @param callback The callback function.
    */
-  getToken(): Promise<TokenData>;
-  getToken(callback: GetTokenCallback): void;
-  getToken(callback?: GetTokenCallback): void | Promise<TokenData> {
+  getToken(opts?: GetTokenOptions): Promise<TokenData>;
+  getToken(callback: GetTokenCallback, opts?: GetTokenOptions): void;
+  getToken(
+    callback?: GetTokenCallback | GetTokenOptions,
+    opts = {} as GetTokenOptions
+  ): void | Promise<TokenData> {
+    if (typeof callback === 'object') {
+      opts = callback as GetTokenOptions;
+      callback = undefined;
+    }
+    opts = Object.assign(
+      {
+        forceRefresh: false,
+      },
+      opts
+    );
+
     if (callback) {
-      this.getTokenAsync().then(t => callback(null, t), callback);
+      const cb = callback as GetTokenCallback;
+      this.getTokenAsync(opts).then(t => cb(null, t), callback);
       return;
     }
-    return this.getTokenAsync();
+    return this.getTokenAsync(opts);
   }
 
   /**
@@ -168,8 +187,8 @@ export class GoogleToken {
     }
   }
 
-  private async getTokenAsync(): Promise<TokenData> {
-    if (!this.hasExpired()) {
+  private async getTokenAsync(opts: GetTokenOptions): Promise<TokenData> {
+    if (this.hasExpired() === false && opts.forceRefresh === false) {
       return Promise.resolve(this.rawToken!);
     }
 
