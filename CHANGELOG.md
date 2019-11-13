@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [4.1.2](https://www.github.com/googleapis/node-gtoken/compare/v4.1.1...v4.1.2) (2019-11-13)
+
+
+### Bug Fixes
+
+* **docs:** add jsdoc-region-tag plugin ([#242](https://www.github.com/googleapis/node-gtoken/issues/242)) ([994c5cc](https://www.github.com/googleapis/node-gtoken/commit/994c5ccf92731599aa63b84c29a9d5f6b1431cc5))
+
 ### [4.1.1](https://www.github.com/googleapis/node-gtoken/compare/v4.1.0...v4.1.1) (2019-10-31)
 
 
