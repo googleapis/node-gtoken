@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [4.1.3](https://www.github.com/googleapis/node-gtoken/compare/v4.1.2...v4.1.3) (2019-11-15)
+
+
+### Bug Fixes
+
+* **deps:** use typescript ~3.6.0 ([#246](https://www.github.com/googleapis/node-gtoken/issues/246)) ([5f725b7](https://www.github.com/googleapis/node-gtoken/commit/5f725b71f080e83058b1a23340acadc0c8704123))
+
 ### [4.1.2](https://www.github.com/googleapis/node-gtoken/compare/v4.1.1...v4.1.2) (2019-11-13)
 
 
