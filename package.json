@@ -57,7 +57,7 @@
     "nock": "^11.3.2",
     "nyc": "^14.0.0",
     "source-map-support": "^0.5.6",
-    "typescript": "~3.7.0",
+    "typescript": "~3.6.0",
     "linkinator": "^1.5.0"
   },
   "files": [
