@@ -6,6 +6,7 @@
  */
 
 import * as assert from 'assert';
+import {describe, it} from 'mocha';
 import {GoogleToken} from '../src';
 
 describe('gtoken system tests', () => {
