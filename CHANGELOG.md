@@ -4,6 +4,14 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [4.1.4](https://www.github.com/googleapis/node-gtoken/compare/v4.1.3...v4.1.4) (2020-01-06)
+
+
+### Bug Fixes
+
+* **deps:** pin TypeScript below 3.7.0 ([f1ae7b6](https://www.github.com/googleapis/node-gtoken/commit/f1ae7b64ead1c918546ae5bbe8546dfb4ecc788a))
+* **deps:** update dependency jws to v4 ([#251](https://www.github.com/googleapis/node-gtoken/issues/251)) ([e13542f](https://www.github.com/googleapis/node-gtoken/commit/e13542f888a81ed3ced0023e9b78ed25264b1d1c))
+
 ### [4.1.3](https://www.github.com/googleapis/node-gtoken/compare/v4.1.2...v4.1.3) (2019-11-15)
 
 
