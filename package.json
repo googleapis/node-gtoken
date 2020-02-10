@@ -56,7 +56,7 @@
     "nock": "^11.3.2",
     "c8": "^7.0.0",
     "typescript": "3.6.4",
-    "linkinator": "^1.5.0"
+    "linkinator": "^2.0.0"
   },
   "files": [
     "build/src",
