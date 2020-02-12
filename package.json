@@ -21,7 +21,8 @@
     "samples-test": "cd samples/ && npm link ../ && npm test && cd ../",
     "docs": "compodoc src/",
     "docs-test": "linkinator docs",
-    "predocs-test": "npm run docs"
+    "predocs-test": "npm run docs",
+    "prelint": "cd samples; npm link ../"
   },
   "keywords": [
     "google",
