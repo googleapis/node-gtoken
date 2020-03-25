@@ -4,6 +4,23 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [5.0.0](https://www.github.com/googleapis/node-gtoken/compare/v4.1.4...v5.0.0) (2020-03-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop Node 8 from engines (#284)
+* typescript@3.7.x introduced breaking changes to compiled code
+
+### Features
+
+* drop Node 8 from engines ([#284](https://www.github.com/googleapis/node-gtoken/issues/284)) ([209e007](https://www.github.com/googleapis/node-gtoken/commit/209e00746116a82a3cf9acc158aff12a4971f3d0))
+
+
+### Build System
+
+* update gts and typescript ([#283](https://www.github.com/googleapis/node-gtoken/issues/283)) ([ff076dc](https://www.github.com/googleapis/node-gtoken/commit/ff076dcb3da229238e7bed28d739c48986652c78))
+
 ### [4.1.4](https://www.github.com/googleapis/node-gtoken/compare/v4.1.3...v4.1.4) (2020-01-06)
 
 

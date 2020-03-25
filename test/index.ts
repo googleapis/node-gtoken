@@ -486,9 +486,9 @@ describe('.getToken()', () => {
     // exist. This is the same as when running in the browser.
     delete require.cache[require.resolve('../src')];
     delete require.cache[require.resolve('fs')];
-    const fs = require('fs');
+    const fs = require('fs'); // eslint-disable-line @typescript-eslint/no-var-requires
     delete fs.readFile;
-    const {GoogleToken} = require('../src');
+    const {GoogleToken} = require('../src'); // eslint-disable-line @typescript-eslint/no-var-requires
 
     let message;
     try {

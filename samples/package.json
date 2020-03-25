@@ -5,13 +5,17 @@
   "engines": {
     "node": ">=8"
   },
+  "files": [
+    "*.js",
+    "!test/"
+  ],
   "repository": "google/node-gtoken",
   "private": true,
   "scripts": {
     "test": "mocha system-test"
   },
   "dependencies": {
-    "gtoken": "^4.1.4"
+    "gtoken": "^5.0.0"
   },
   "devDependencies": {
     "mocha": "^7.0.0"
