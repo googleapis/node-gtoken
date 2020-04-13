@@ -4,6 +4,15 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [5.0.1](https://www.github.com/googleapis/node-gtoken/compare/v5.0.0...v5.0.1) (2020-04-13)
+
+
+### Bug Fixes
+
+* **deps:** update dependency gaxios to v3 ([#287](https://www.github.com/googleapis/node-gtoken/issues/287)) ([033731e](https://www.github.com/googleapis/node-gtoken/commit/033731e128fef0034b07b13183044e5060809418))
+* **deps:** update dependency google-p12-pem to v3 ([#280](https://www.github.com/googleapis/node-gtoken/issues/280)) ([25121b0](https://www.github.com/googleapis/node-gtoken/commit/25121b00cc9a4d32854f36ea8bc4bbd2cb77afbb))
+* apache license URL ([#468](https://www.github.com/googleapis/node-gtoken/issues/468)) ([#293](https://www.github.com/googleapis/node-gtoken/issues/293)) ([14a5bcd](https://www.github.com/googleapis/node-gtoken/commit/14a5bcd52d7b18d787c620451471e904784222d9))
+
 ## [5.0.0](https://www.github.com/googleapis/node-gtoken/compare/v4.1.4...v5.0.0) (2020-03-24)
 
 
