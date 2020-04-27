@@ -4,7 +4,7 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/node-gtoken.git",
-        "sha": "64ea0812b11602d0aca78fb51fd4d1e39051de89"
+        "sha": "bd638e1c0f3461481e70742c8c603836c3d314d3"
       }
     },
     {
