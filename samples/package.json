@@ -18,6 +18,6 @@
     "gtoken": "^5.0.1"
   },
   "devDependencies": {
-    "mocha": "^7.0.0"
+    "mocha": "^8.0.0"
   }
 }
