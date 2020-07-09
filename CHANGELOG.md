@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [5.0.2](https://www.github.com/googleapis/node-gtoken/compare/v5.0.1...v5.0.2) (2020-07-09)
+
+
+### Bug Fixes
+
+* typeo in nodejs .gitattribute ([#311](https://www.github.com/googleapis/node-gtoken/issues/311)) ([8e17b4c](https://www.github.com/googleapis/node-gtoken/commit/8e17b4c0757832b2d31178684a6b24e1759d9f76))
+
 ### [5.0.1](https://www.github.com/googleapis/node-gtoken/compare/v5.0.0...v5.0.1) (2020-04-13)
 
 
