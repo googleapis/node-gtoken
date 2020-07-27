@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [5.0.3](https://www.github.com/googleapis/node-gtoken/compare/v5.0.2...v5.0.3) (2020-07-27)
+
+
+### Bug Fixes
+
+* move gitattributes files to node templates ([#322](https://www.github.com/googleapis/node-gtoken/issues/322)) ([1d1786b](https://www.github.com/googleapis/node-gtoken/commit/1d1786b8915cd9a33577237ec6a6148a29e11a88))
+
 ### [5.0.2](https://www.github.com/googleapis/node-gtoken/compare/v5.0.1...v5.0.2) (2020-07-09)
 
 
