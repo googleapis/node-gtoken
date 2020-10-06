@@ -1,6 +1,6 @@
 {
   "name": "gtoken",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "description": "Node.js Google Authentication Service Account Tokens",
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
@@ -42,7 +42,7 @@
   "license": "MIT",
   "dependencies": {
     "gaxios": "^3.0.0",
-    "google-p12-pem": "^3.0.0",
+    "google-p12-pem": "^3.0.3",
     "jws": "^4.0.0",
     "mime": "^2.2.0"
   },
