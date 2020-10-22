@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [5.0.5](https://www.github.com/googleapis/node-gtoken/compare/v5.0.4...v5.0.5) (2020-10-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency gaxios to v4 ([#342](https://www.github.com/googleapis/node-gtoken/issues/342)) ([7954a19](https://www.github.com/googleapis/node-gtoken/commit/7954a197e923469b031f0833a2016fa0378285b1))
+
 ### [5.0.4](https://www.github.com/googleapis/node-gtoken/compare/v5.0.3...v5.0.4) (2020-10-06)
 
 
