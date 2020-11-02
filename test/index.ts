@@ -138,6 +138,31 @@ describe('.hasExpired()', () => {
   });
 });
 
+describe('.expiresSoon()', () => {
+  it('should exist', () => {
+    const gtoken = new GoogleToken();
+    assert.strictEqual(typeof gtoken.expiresSoon, 'function');
+  });
+
+  it('should detect expiring tokens', () => {
+    const gtoken = new GoogleToken();
+    assert(gtoken.expiresSoon(), 'should be expired without token');
+    gtoken.rawToken = {
+      access_token: 'hello',
+    };
+    assert(gtoken.expiresSoon(), 'should be expired without expires_at');
+    gtoken.expiresAt = new Date().getTime() + 50000;
+    assert(gtoken.expiresSoon(), 'should be expired with near future date');
+    gtoken.expiresAt = new Date().getTime() + 70000;
+    assert(!gtoken.expiresSoon(), 'shouldnt be expired with future date');
+    gtoken.expiresAt = new Date().getTime() - 10000;
+    assert(gtoken.expiresSoon(), 'should be expired with past date');
+    gtoken.expiresAt = new Date().getTime() + 10000;
+    gtoken.rawToken = undefined;
+    assert(gtoken.expiresSoon(), 'should be expired with no token');
+  });
+});
+
 describe('.revokeToken()', () => {
   it('should exist', () => {
     const gtoken = new GoogleToken();
@@ -294,12 +319,12 @@ describe('.getToken()', () => {
     });
   });
 
-  it('should return cached token if not expired', done => {
+  it('should return cached token if not expiring soon', done => {
     const gtoken = new GoogleToken(TESTDATA);
     gtoken.rawToken = {
       access_token: 'mytoken',
     };
-    gtoken.expiresAt = new Date().getTime() + 10000;
+    gtoken.expiresAt = new Date().getTime() + 70000;
     gtoken.getToken((err, token) => {
       assert.strictEqual(token!.access_token, 'mytoken');
       done();
@@ -311,7 +336,7 @@ describe('.getToken()', () => {
     gtoken.rawToken = {
       access_token: 'mytoken',
     };
-    gtoken.expiresAt = new Date().getTime() + 10000;
+    gtoken.expiresAt = new Date().getTime() + 70000;
     const fakeToken = 'abc123';
     const scope = createGetTokenMock(200, {access_token: fakeToken});
     const token = await gtoken.getToken({forceRefresh: true});
@@ -323,7 +348,7 @@ describe('.getToken()', () => {
     gtoken.rawToken = {
       access_token: 'mytoken',
     };
-    gtoken.expiresAt = new Date().getTime() + 10000;
+    gtoken.expiresAt = new Date().getTime() + 70000;
     const fakeToken = 'qwerty';
     const scope = createGetTokenMock(200, {access_token: fakeToken});
     gtoken.getToken(
@@ -334,6 +359,18 @@ describe('.getToken()', () => {
       },
       {forceRefresh: true}
     );
+  });
+
+  it('should not use cached token if expiring soon', async () => {
+    const gtoken = new GoogleToken(TESTDATA);
+    gtoken.rawToken = {
+      access_token: 'mytoken',
+    };
+    gtoken.expiresAt = new Date().getTime() + 10000;
+    const fakeToken = 'abc123';
+    const scope = createGetTokenMock(200, {access_token: fakeToken});
+    const token = await gtoken.getToken({forceRefresh: true});
+    assert.strictEqual(token.access_token, fakeToken);
   });
 
   it('should run gp12pem if .p12 file is given', done => {
