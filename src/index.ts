@@ -110,6 +110,20 @@ export class GoogleToken {
   }
 
   /**
+   * Returns whether the token will expire within 60 seconds
+   *
+   * @return true if the token will be expired within the next 60 seconds, false otherwise.
+   */
+  expiresSoon() {
+    const now = new Date().getTime();
+    if (this.rawToken && this.expiresAt) {
+      return this.expiresAt - now < 60000;
+    } else {
+      return true;
+    }
+  }
+
+  /**
    * Returns a cached token or retrieves a new one from Google.
    *
    * @param callback The callback function.
@@ -188,7 +202,7 @@ export class GoogleToken {
   }
 
   private async getTokenAsync(opts: GetTokenOptions): Promise<TokenData> {
-    if (this.hasExpired() === false && opts.forceRefresh === false) {
+    if (this.expiresSoon() === false && opts.forceRefresh === false) {
       return Promise.resolve(this.rawToken!);
     }
 
