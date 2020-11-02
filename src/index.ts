@@ -86,6 +86,8 @@ export class GoogleToken {
   email?: string;
   additionalClaims?: {};
 
+  private inFlightRequest?: undefined | Promise<TokenData>;
+
   /**
    * Create a GoogleToken.
    *
@@ -136,6 +138,7 @@ export class GoogleToken {
       this.getTokenAsync(opts).then(t => cb(null, t), callback);
       return;
     }
+
     return this.getTokenAsync(opts);
   }
 
@@ -188,6 +191,17 @@ export class GoogleToken {
   }
 
   private async getTokenAsync(opts: GetTokenOptions): Promise<TokenData> {
+    if (this.inFlightRequest && !opts.forceRefresh) {
+      return await this.inFlightRequest;
+    }
+
+    try {
+      return await (this.inFlightRequest = this.getTokenAsyncInner(opts));
+    } finally {
+      this.inFlightRequest = undefined;
+    }
+  }
+  private async getTokenAsyncInner(opts: GetTokenOptions): Promise<TokenData> {
     if (this.hasExpired() === false && opts.forceRefresh === false) {
       return Promise.resolve(this.rawToken!);
     }
