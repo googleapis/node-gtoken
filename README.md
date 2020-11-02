@@ -102,6 +102,8 @@ const gtoken = new GoogleToken({
 - `options.sub`: The email address of the user requesting delegated access.
 - `options.keyFile`: The filename of `.json` key, `.pem` key or `.p12` key.
 - `options.key`: The raw RSA private key value, in place of using `options.keyFile`.
+- `options.additionalClaims`: Additional claims to include in the JWT when requesting a token.
+- `options.eagerRefreshThresholdMillis`: How long must a token be valid for in order to return it from the cache. Defaults to 5 minutes.
 
 ### .getToken(callback)
 

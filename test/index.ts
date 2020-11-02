@@ -138,28 +138,28 @@ describe('.hasExpired()', () => {
   });
 });
 
-describe('.expiresSoon()', () => {
+describe('.isTokenExpiring()', () => {
   it('should exist', () => {
     const gtoken = new GoogleToken();
-    assert.strictEqual(typeof gtoken.expiresSoon, 'function');
+    assert.strictEqual(typeof gtoken.isTokenExpiring, 'function');
   });
 
   it('should detect expiring tokens', () => {
     const gtoken = new GoogleToken();
-    assert(gtoken.expiresSoon(), 'should be expired without token');
+    assert(gtoken.isTokenExpiring(), 'should be expired without token');
     gtoken.rawToken = {
       access_token: 'hello',
     };
-    assert(gtoken.expiresSoon(), 'should be expired without expires_at');
-    gtoken.expiresAt = new Date().getTime() + 50000;
-    assert(gtoken.expiresSoon(), 'should be expired with near future date');
-    gtoken.expiresAt = new Date().getTime() + 70000;
-    assert(!gtoken.expiresSoon(), 'shouldnt be expired with future date');
+    assert(gtoken.isTokenExpiring(), 'should be expired without expires_at');
+    gtoken.expiresAt = new Date().getTime() + 4 * 60 * 1000;
+    assert(gtoken.isTokenExpiring(), 'should be expired with near future date');
+    gtoken.expiresAt = new Date().getTime() + 6 * 60 * 1000;
+    assert(!gtoken.isTokenExpiring(), 'shouldnt be expired with future date');
     gtoken.expiresAt = new Date().getTime() - 10000;
-    assert(gtoken.expiresSoon(), 'should be expired with past date');
-    gtoken.expiresAt = new Date().getTime() + 10000;
+    assert(gtoken.isTokenExpiring(), 'should be expired with past date');
+    gtoken.expiresAt = new Date().getTime() + 6 * 60 * 1000;
     gtoken.rawToken = undefined;
-    assert(gtoken.expiresSoon(), 'should be expired with no token');
+    assert(gtoken.isTokenExpiring(), 'should be expired with no token');
   });
 });
 
@@ -324,7 +324,7 @@ describe('.getToken()', () => {
     gtoken.rawToken = {
       access_token: 'mytoken',
     };
-    gtoken.expiresAt = new Date().getTime() + 70000;
+    gtoken.expiresAt = new Date().getTime() + 6 * 60 * 1000;
     gtoken.getToken((err, token) => {
       assert.strictEqual(token!.access_token, 'mytoken');
       done();
@@ -366,7 +366,7 @@ describe('.getToken()', () => {
     gtoken.rawToken = {
       access_token: 'mytoken',
     };
-    gtoken.expiresAt = new Date().getTime() + 10000;
+    gtoken.expiresAt = new Date().getTime() + 4 * 60 * 1000;
     const fakeToken = 'abc123';
     const scope = createGetTokenMock(200, {access_token: fakeToken});
     const token = await gtoken.getToken({forceRefresh: true});
