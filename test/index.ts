@@ -144,6 +144,19 @@ describe('.isTokenExpiring()', () => {
     assert.strictEqual(typeof gtoken.isTokenExpiring, 'function');
   });
 
+  it('should default to 0ms', () => {
+    const gtoken = new GoogleToken();
+    assert(gtoken.isTokenExpiring(), 'should be expired without token');
+    gtoken.rawToken = {
+      access_token: 'hello',
+    };
+    assert(gtoken.isTokenExpiring(), 'should be expired without expires_at');
+    gtoken.expiresAt = new Date().getTime() + 1000;
+    assert(!gtoken.isTokenExpiring(), 'should not be expired with future date');
+    gtoken.expiresAt = new Date().getTime() - 1000;
+    assert(gtoken.isTokenExpiring(), 'should be expired with past date');
+  });
+
   it('should detect expiring tokens', () => {
     const gtoken = new GoogleToken({
       eagerRefreshThresholdMillis: 5 * 60 * 1000,
