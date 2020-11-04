@@ -115,14 +115,13 @@ export class GoogleToken {
   }
 
   /**
-   * Returns whether the token will expire within 60 seconds
+   * Returns whether the token will expire within eagerRefreshThresholdMillis
    *
-   * @return true if the token will be expired within the next 60 seconds, false otherwise.
+   * @return true if the token will be expired within eagerRefreshThresholdMillis, false otherwise.
    */
   isTokenExpiring() {
     const now = new Date().getTime();
-    const eagerRefreshThresholdMillis =
-      this.eagerRefreshThresholdMillis ?? 5 * 60 * 1000;
+    const eagerRefreshThresholdMillis = this.eagerRefreshThresholdMillis ?? 0;
     if (this.rawToken && this.expiresAt) {
       return this.expiresAt <= now + eagerRefreshThresholdMillis;
     } else {

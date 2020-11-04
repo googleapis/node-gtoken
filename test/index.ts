@@ -145,7 +145,9 @@ describe('.isTokenExpiring()', () => {
   });
 
   it('should detect expiring tokens', () => {
-    const gtoken = new GoogleToken();
+    const gtoken = new GoogleToken({
+      eagerRefreshThresholdMillis: 5 * 60 * 1000,
+    });
     assert(gtoken.isTokenExpiring(), 'should be expired without token');
     gtoken.rawToken = {
       access_token: 'hello',
@@ -257,6 +259,7 @@ describe('.getToken()', () => {
     const token = await gtoken.getToken();
     scope.done();
     assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
+    scope.done();
   });
 
   it('should return error if iss is not set with .pem', done => {
@@ -290,6 +293,7 @@ describe('.getToken()', () => {
       const parsed = JSON.parse(KEYJSONCONTENTS);
       assert.deepStrictEqual(gtoken.key, parsed.private_key);
       assert.deepStrictEqual(gtoken.iss, parsed.client_email);
+      scope.done();
       done();
     });
   });
@@ -301,8 +305,8 @@ describe('.getToken()', () => {
     const gtoken = new GoogleToken(opts);
     const scope = createGetTokenMock();
     const token = await gtoken.getToken();
-    scope.done();
     assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
+    scope.done();
   });
 
   it('should return error if iss is not set with .json', done => {
@@ -319,8 +323,23 @@ describe('.getToken()', () => {
     });
   });
 
-  it('should return cached token if not expiring soon', done => {
+  it('should return cached token if not expired', done => {
     const gtoken = new GoogleToken(TESTDATA);
+    gtoken.rawToken = {
+      access_token: 'mytoken',
+    };
+    gtoken.expiresAt = new Date().getTime() + 1000;
+    gtoken.getToken((err, token) => {
+      assert.strictEqual(token!.access_token, 'mytoken');
+      done();
+    });
+  });
+
+  it('should return cached token if not expiring soon', done => {
+    const gtoken = new GoogleToken({
+      ...TESTDATA,
+      eagerRefreshThresholdMillis: 5 * 60 * 1000,
+    });
     gtoken.rawToken = {
       access_token: 'mytoken',
     };
@@ -336,11 +355,12 @@ describe('.getToken()', () => {
     gtoken.rawToken = {
       access_token: 'mytoken',
     };
-    gtoken.expiresAt = new Date().getTime() + 70000;
+    gtoken.expiresAt = new Date().getTime() + 10000;
     const fakeToken = 'abc123';
     const scope = createGetTokenMock(200, {access_token: fakeToken});
     const token = await gtoken.getToken({forceRefresh: true});
     assert.strictEqual(token.access_token, fakeToken);
+    scope.done();
   });
 
   it('should not use cached token if forceRefresh=true (cb)', done => {
@@ -348,13 +368,14 @@ describe('.getToken()', () => {
     gtoken.rawToken = {
       access_token: 'mytoken',
     };
-    gtoken.expiresAt = new Date().getTime() + 70000;
+    gtoken.expiresAt = new Date().getTime() + 10000;
     const fakeToken = 'qwerty';
     const scope = createGetTokenMock(200, {access_token: fakeToken});
     gtoken.getToken(
       (err, token) => {
         assert.ifError(err);
         assert.strictEqual(token!.access_token, fakeToken);
+        scope.done();
         done();
       },
       {forceRefresh: true}
@@ -362,7 +383,10 @@ describe('.getToken()', () => {
   });
 
   it('should not use cached token if expiring soon', async () => {
-    const gtoken = new GoogleToken(TESTDATA);
+    const gtoken = new GoogleToken({
+      ...TESTDATA,
+      eagerRefreshThresholdMillis: 5 * 60 * 1000,
+    });
     gtoken.rawToken = {
       access_token: 'mytoken',
     };
@@ -371,6 +395,7 @@ describe('.getToken()', () => {
     const scope = createGetTokenMock(200, {access_token: fakeToken});
     const token = await gtoken.getToken({forceRefresh: true});
     assert.strictEqual(token.access_token, fakeToken);
+    scope.done();
   });
 
   it('should run gp12pem if .p12 file is given', done => {
