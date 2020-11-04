@@ -192,7 +192,7 @@ export class GoogleToken {
 
   private async getTokenAsync(opts: GetTokenOptions): Promise<TokenData> {
     if (this.inFlightRequest && !opts.forceRefresh) {
-      return await this.inFlightRequest;
+      return this.inFlightRequest;
     }
 
     try {
