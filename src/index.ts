@@ -50,7 +50,7 @@ export interface TokenOptions {
   additionalClaims?: {};
   // Eagerly refresh unexpired tokens when they are within this many
   // milliseconds from expiring".
-  // Defaults to a value of 300000 (5 minutes).
+  // Defaults to 0
   eagerRefreshThresholdMillis?: number;
 }
 
