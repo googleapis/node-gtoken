@@ -259,7 +259,6 @@ describe('.getToken()', () => {
     const token = await gtoken.getToken();
     scope.done();
     assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
-    scope.done();
   });
 
   it('should return error if iss is not set with .pem', done => {
@@ -305,8 +304,8 @@ describe('.getToken()', () => {
     const gtoken = new GoogleToken(opts);
     const scope = createGetTokenMock();
     const token = await gtoken.getToken();
-    assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
     scope.done();
+    assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
   });
 
   it('should return error if iss is not set with .json', done => {
@@ -328,7 +327,7 @@ describe('.getToken()', () => {
     gtoken.rawToken = {
       access_token: 'mytoken',
     };
-    gtoken.expiresAt = new Date().getTime() + 1000;
+    gtoken.expiresAt = new Date().getTime() + 10000;
     gtoken.getToken((err, token) => {
       assert.strictEqual(token!.access_token, 'mytoken');
       done();
