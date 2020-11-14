@@ -410,6 +410,40 @@ describe('.getToken()', () => {
     scope.done();
   });
 
+  it('should not make parallel requests unless forceRefresh=true (promise)', async () => {
+    const gtoken = new GoogleToken(TESTDATA);
+    gtoken.rawToken = {
+      access_token: 'mytoken',
+    };
+    gtoken.expiresAt = new Date().getTime() - 10000;
+    const fakeToken = 'abc123';
+    createGetTokenMock(200, {access_token: fakeToken});
+    const tokens = await Promise.all([gtoken.getToken(), gtoken.getToken()]);
+    assert.deepStrictEqual(
+      tokens.map(t => t.access_token),
+      [fakeToken, fakeToken]
+    );
+  });
+  it('should make parallel requests if forceRefresh=true (promise)', async () => {
+    const gtoken = new GoogleToken(TESTDATA);
+    gtoken.rawToken = {
+      access_token: 'mytoken',
+    };
+    gtoken.expiresAt = new Date().getTime() - 10000;
+    const fakeTokenA = 'abc123';
+    const fakeTokenB = '123abc';
+    createGetTokenMock(200, {access_token: fakeTokenA});
+    createGetTokenMock(200, {access_token: fakeTokenB});
+    const tokens = await Promise.all([
+      gtoken.getToken({forceRefresh: true}),
+      gtoken.getToken({forceRefresh: true}),
+    ]);
+    assert.deepStrictEqual(
+      tokens.map(t => t.access_token).sort(),
+      [fakeTokenA, fakeTokenB].sort()
+    );
+  });
+
   it('should run gp12pem if .p12 file is given', done => {
     const gtoken = new GoogleToken(TESTDATA_P12);
     const scope = createGetTokenMock();

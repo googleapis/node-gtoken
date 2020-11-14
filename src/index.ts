@@ -91,6 +91,8 @@ export class GoogleToken {
   additionalClaims?: {};
   eagerRefreshThresholdMillis?: number;
 
+  private inFlightRequest?: undefined | Promise<TokenData>;
+
   /**
    * Create a GoogleToken.
    *
@@ -156,6 +158,7 @@ export class GoogleToken {
       this.getTokenAsync(opts).then(t => cb(null, t), callback);
       return;
     }
+
     return this.getTokenAsync(opts);
   }
 
@@ -208,7 +211,18 @@ export class GoogleToken {
   }
 
   private async getTokenAsync(opts: GetTokenOptions): Promise<TokenData> {
-    if (this.isTokenExpiring() === false && opts.forceRefresh === false) {
+    if (this.inFlightRequest && !opts.forceRefresh) {
+      return this.inFlightRequest;
+    }
+
+    try {
+      return await (this.inFlightRequest = this.getTokenAsyncInner(opts));
+    } finally {
+      this.inFlightRequest = undefined;
+    }
+  }
+  private async getTokenAsyncInner(opts: GetTokenOptions): Promise<TokenData> {
+    if (this.isExpiring() === false && opts.forceRefresh === false) {
       return Promise.resolve(this.rawToken!);
     }
 
