@@ -222,7 +222,7 @@ export class GoogleToken {
     }
   }
   private async getTokenAsyncInner(opts: GetTokenOptions): Promise<TokenData> {
-    if (this.isExpiring() === false && opts.forceRefresh === false) {
+    if (this.isTokenExpiring() === false && opts.forceRefresh === false) {
       return Promise.resolve(this.rawToken!);
     }
 
