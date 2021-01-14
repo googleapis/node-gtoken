@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [5.2.0](https://www.github.com/googleapis/node-gtoken/compare/v5.1.0...v5.2.0) (2021-01-14)
+
+
+### Features
+
+* request new tokens before they expire ([#349](https://www.github.com/googleapis/node-gtoken/issues/349)) ([e84d9a3](https://www.github.com/googleapis/node-gtoken/commit/e84d9a31517c1449141708a0a2cddd9d0129fa95))
+
 ## [5.1.0](https://www.github.com/googleapis/node-gtoken/compare/v5.0.5...v5.1.0) (2020-11-14)
 
 
