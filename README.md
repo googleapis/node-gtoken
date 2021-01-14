@@ -29,7 +29,8 @@ const { GoogleToken } = require('gtoken');
 const gtoken = new GoogleToken({
   keyFile: 'path/to/key.pem', // or path to .p12 key file
   email: 'my_service_account_email@developer.gserviceaccount.com',
-  scope: ['https://scope1', 'https://scope2'] // or space-delimited string of scopes
+  scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
+  eagerRefreshThresholdMillis: 5 * 60 * 1000
 });
 
 gtoken.getToken((err, tokens) => {
@@ -69,7 +70,8 @@ gtoken.getToken()
 const { GoogleToken } = require('gtoken');
 const gtoken = new GoogleToken({
   keyFile: 'path/to/key.json',
-  scope: ['https://scope1', 'https://scope2'] // or space-delimited string of scopes
+  scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
+  eagerRefreshThresholdMillis: 5 * 60 * 1000
 });
 
 gtoken.getToken((err, tokens) => {
@@ -89,7 +91,8 @@ const { GoogleToken } = require('gtoken');
 const gtoken = new GoogleToken({
   email: 'my_service_account_email@developer.gserviceaccount.com',
   scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
-  key: key
+  key: key,
+  eagerRefreshThresholdMillis: 5 * 60 * 1000
 });
 ```
 
@@ -102,6 +105,8 @@ const gtoken = new GoogleToken({
 - `options.sub`: The email address of the user requesting delegated access.
 - `options.keyFile`: The filename of `.json` key, `.pem` key or `.p12` key.
 - `options.key`: The raw RSA private key value, in place of using `options.keyFile`.
+- `options.additionalClaims`: Additional claims to include in the JWT when requesting a token.
+- `options.eagerRefreshThresholdMillis`: How long must a token be valid for in order to return it from the cache. Defaults to 0.
 
 ### .getToken(callback)
 

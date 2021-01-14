@@ -138,6 +138,46 @@ describe('.hasExpired()', () => {
   });
 });
 
+describe('.isTokenExpiring()', () => {
+  it('should exist', () => {
+    const gtoken = new GoogleToken();
+    assert.strictEqual(typeof gtoken.isTokenExpiring, 'function');
+  });
+
+  it('should default to 0ms', () => {
+    const gtoken = new GoogleToken();
+    assert(gtoken.isTokenExpiring(), 'should be expired without token');
+    gtoken.rawToken = {
+      access_token: 'hello',
+    };
+    assert(gtoken.isTokenExpiring(), 'should be expired without expires_at');
+    gtoken.expiresAt = new Date().getTime() + 1000;
+    assert(!gtoken.isTokenExpiring(), 'should not be expired with future date');
+    gtoken.expiresAt = new Date().getTime() - 1000;
+    assert(gtoken.isTokenExpiring(), 'should be expired with past date');
+  });
+
+  it('should detect expiring tokens', () => {
+    const gtoken = new GoogleToken({
+      eagerRefreshThresholdMillis: 5 * 60 * 1000,
+    });
+    assert(gtoken.isTokenExpiring(), 'should be expired without token');
+    gtoken.rawToken = {
+      access_token: 'hello',
+    };
+    assert(gtoken.isTokenExpiring(), 'should be expired without expires_at');
+    gtoken.expiresAt = new Date().getTime() + 4 * 60 * 1000;
+    assert(gtoken.isTokenExpiring(), 'should be expired with near future date');
+    gtoken.expiresAt = new Date().getTime() + 6 * 60 * 1000;
+    assert(!gtoken.isTokenExpiring(), 'shouldnt be expired with future date');
+    gtoken.expiresAt = new Date().getTime() - 10000;
+    assert(gtoken.isTokenExpiring(), 'should be expired with past date');
+    gtoken.expiresAt = new Date().getTime() + 6 * 60 * 1000;
+    gtoken.rawToken = undefined;
+    assert(gtoken.isTokenExpiring(), 'should be expired with no token');
+  });
+});
+
 describe('.revokeToken()', () => {
   it('should exist', () => {
     const gtoken = new GoogleToken();
@@ -265,6 +305,7 @@ describe('.getToken()', () => {
       const parsed = JSON.parse(KEYJSONCONTENTS);
       assert.deepStrictEqual(gtoken.key, parsed.private_key);
       assert.deepStrictEqual(gtoken.iss, parsed.client_email);
+      scope.done();
       done();
     });
   });
@@ -306,6 +347,21 @@ describe('.getToken()', () => {
     });
   });
 
+  it('should return cached token if not expiring soon', done => {
+    const gtoken = new GoogleToken({
+      ...TESTDATA,
+      eagerRefreshThresholdMillis: 5 * 60 * 1000,
+    });
+    gtoken.rawToken = {
+      access_token: 'mytoken',
+    };
+    gtoken.expiresAt = new Date().getTime() + 6 * 60 * 1000;
+    gtoken.getToken((err, token) => {
+      assert.strictEqual(token!.access_token, 'mytoken');
+      done();
+    });
+  });
+
   it('should not use cached token if forceRefresh=true (promise)', async () => {
     const gtoken = new GoogleToken(TESTDATA);
     gtoken.rawToken = {
@@ -316,6 +372,7 @@ describe('.getToken()', () => {
     const scope = createGetTokenMock(200, {access_token: fakeToken});
     const token = await gtoken.getToken({forceRefresh: true});
     assert.strictEqual(token.access_token, fakeToken);
+    scope.done();
   });
 
   it('should not use cached token if forceRefresh=true (cb)', done => {
@@ -330,10 +387,27 @@ describe('.getToken()', () => {
       (err, token) => {
         assert.ifError(err);
         assert.strictEqual(token!.access_token, fakeToken);
+        scope.done();
         done();
       },
       {forceRefresh: true}
     );
+  });
+
+  it('should not use cached token if expiring soon', async () => {
+    const gtoken = new GoogleToken({
+      ...TESTDATA,
+      eagerRefreshThresholdMillis: 5 * 60 * 1000,
+    });
+    gtoken.rawToken = {
+      access_token: 'mytoken',
+    };
+    gtoken.expiresAt = new Date().getTime() + 4 * 60 * 1000;
+    const fakeToken = 'abc123';
+    const scope = createGetTokenMock(200, {access_token: fakeToken});
+    const token = await gtoken.getToken({forceRefresh: true});
+    assert.strictEqual(token.access_token, fakeToken);
+    scope.done();
   });
 
   it('should not make parallel requests unless forceRefresh=true (promise)', async () => {

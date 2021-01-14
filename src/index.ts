@@ -48,6 +48,10 @@ export interface TokenOptions {
   sub?: string;
   scope?: string | string[];
   additionalClaims?: {};
+  // Eagerly refresh unexpired tokens when they are within this many
+  // milliseconds from expiring".
+  // Defaults to 0
+  eagerRefreshThresholdMillis?: number;
 }
 
 export interface GetTokenOptions {
@@ -85,6 +89,7 @@ export class GoogleToken {
   tokenExpires?: number;
   email?: string;
   additionalClaims?: {};
+  eagerRefreshThresholdMillis?: number;
 
   private inFlightRequest?: undefined | Promise<TokenData>;
 
@@ -106,6 +111,21 @@ export class GoogleToken {
     const now = new Date().getTime();
     if (this.rawToken && this.expiresAt) {
       return now >= this.expiresAt;
+    } else {
+      return true;
+    }
+  }
+
+  /**
+   * Returns whether the token will expire within eagerRefreshThresholdMillis
+   *
+   * @return true if the token will be expired within eagerRefreshThresholdMillis, false otherwise.
+   */
+  isTokenExpiring() {
+    const now = new Date().getTime();
+    const eagerRefreshThresholdMillis = this.eagerRefreshThresholdMillis ?? 0;
+    if (this.rawToken && this.expiresAt) {
+      return this.expiresAt <= now + eagerRefreshThresholdMillis;
     } else {
       return true;
     }
@@ -202,7 +222,7 @@ export class GoogleToken {
     }
   }
   private async getTokenAsyncInner(opts: GetTokenOptions): Promise<TokenData> {
-    if (this.hasExpired() === false && opts.forceRefresh === false) {
+    if (this.isTokenExpiring() === false && opts.forceRefresh === false) {
       return Promise.resolve(this.rawToken!);
     }
 
@@ -274,6 +294,7 @@ export class GoogleToken {
     } else {
       this.scope = options.scope;
     }
+    this.eagerRefreshThresholdMillis = options.eagerRefreshThresholdMillis;
   }
 
   /**
