@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [5.1.0](https://www.github.com/googleapis/node-gtoken/compare/v5.0.5...v5.1.0) (2020-11-14)
+
+
+### Features
+
+* dedupe concurrent requests ([#351](https://www.github.com/googleapis/node-gtoken/issues/351)) ([9001f1d](https://www.github.com/googleapis/node-gtoken/commit/9001f1d00931f480d40fa323c9b527beaef2254a))
+
 ### [5.0.5](https://www.github.com/googleapis/node-gtoken/compare/v5.0.4...v5.0.5) (2020-10-22)
 
 
