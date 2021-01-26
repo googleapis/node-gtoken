@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [5.2.1](https://www.github.com/googleapis/node-gtoken/compare/v5.2.0...v5.2.1) (2021-01-26)
+
+
+### Bug Fixes
+
+* **deps:** remove dependency on mime ([#357](https://www.github.com/googleapis/node-gtoken/issues/357)) ([0a1e6b3](https://www.github.com/googleapis/node-gtoken/commit/0a1e6b32206364106631c0ca8cdd2e325de2af32))
+
 ## [5.2.0](https://www.github.com/googleapis/node-gtoken/compare/v5.1.0...v5.2.0) (2021-01-14)
 
 
