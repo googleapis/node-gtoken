@@ -8,7 +8,7 @@
 import * as fs from 'fs';
 import {request} from 'gaxios';
 import * as jws from 'jws';
-import * as mime from 'mime';
+import * as path from 'path';
 import {promisify} from 'util';
 
 const readFile = fs.readFile
@@ -168,10 +168,9 @@ export class GoogleToken {
    * @returns an object with privateKey and clientEmail properties
    */
   async getCredentials(keyFile: string): Promise<Credentials> {
-    const mimeType = mime.getType(keyFile);
-    switch (mimeType) {
-      case 'application/json': {
-        // *.json file
+    const ext = path.extname(keyFile);
+    switch (ext) {
+      case '.json': {
         const key = await readFile(keyFile, 'utf8');
         const body = JSON.parse(key);
         const privateKey = body.private_key;
@@ -184,13 +183,14 @@ export class GoogleToken {
         }
         return {privateKey, clientEmail};
       }
-      case 'application/x-x509-ca-cert': {
-        // *.pem file
+      case '.der':
+      case '.crt':
+      case '.pem': {
         const privateKey = await readFile(keyFile, 'utf8');
         return {privateKey};
       }
-      case 'application/x-pkcs12': {
-        // *.p12 file
+      case '.p12':
+      case '.pfx': {
         // NOTE:  The loading of `google-p12-pem` is deferred for performance
         // reasons.  The `node-forge` npm module in `google-p12-pem` adds a fair
         // bit time to overall module loading, and is likely not frequently
