@@ -326,7 +326,7 @@ export class GoogleToken {
         url: GOOGLE_TOKEN_URL,
         data: qs.stringify({
           grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-          assertion: 'signedJWT',
+          assertion: signedJWT,
         }),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         responseType: 'json',
