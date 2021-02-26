@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import {request} from 'gaxios';
 import * as jws from 'jws';
 import * as path from 'path';
+import * as qs from 'querystring';
 import {promisify} from 'util';
 
 const readFile = fs.readFile
@@ -21,7 +22,7 @@ const readFile = fs.readFile
       );
     };
 
-const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token';
+const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_REVOKE_TOKEN_URL =
   'https://accounts.google.com/o/oauth2/revoke?token=';
 
@@ -323,10 +324,10 @@ export class GoogleToken {
       const r = await request<TokenData>({
         method: 'POST',
         url: GOOGLE_TOKEN_URL,
-        data: {
+        data: qs.stringify({
           grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-          assertion: signedJWT,
-        },
+          assertion: 'signedJWT',
+        }),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         responseType: 'json',
       });

@@ -19,7 +19,7 @@ const KEYFILEJSON = './test/assets/key.json';
 const KEYFILENOEMAILJSON = './test/assets/key-no-email.json';
 const KEYCONTENTS = fs.readFileSync(KEYFILE, 'utf8');
 const KEYJSONCONTENTS = fs.readFileSync(KEYFILEJSON, 'utf8');
-const GOOGLE_TOKEN_URLS = ['https://www.googleapis.com', '/oauth2/v4/token'];
+const GOOGLE_TOKEN_URLS = ['https://oauth2.googleapis.com', '/token'];
 const GOOGLE_REVOKE_TOKEN_URLS = [
   'https://accounts.google.com',
   '/o/oauth2/revoke',
@@ -610,16 +610,14 @@ describe('.getToken()', () => {
 });
 
 function createGetTokenMock(code = 200, body?: {}) {
-  return nock(GOOGLE_TOKEN_URLS[0])
+  return nock(GOOGLE_TOKEN_URLS[0], {
+    reqheaders: {'Content-Type': 'application/x-www-form-urlencoded'},
+  })
     .replyContentLength()
-    .post(
-      GOOGLE_TOKEN_URLS[1],
-      {
-        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        assertion: /.?/,
-      },
-      {reqheaders: {'Content-Type': 'application/x-www-form-urlencoded'}}
-    )
+    .post(GOOGLE_TOKEN_URLS[1], {
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: /.?/,
+    })
     .reply(code, body);
 }
 
