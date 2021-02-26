@@ -327,7 +327,7 @@ export class GoogleToken {
           grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
           assertion: signedJWT,
         },
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        headers: {'Content-Type': 'application/json'},
         responseType: 'json',
       });
       this.rawToken = r.data;
