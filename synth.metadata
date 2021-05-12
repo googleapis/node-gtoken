@@ -4,14 +4,14 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/node-gtoken.git",
-        "sha": "e48e7e95a88b41f6073dcabc56aa44b76ed10773"
+        "sha": "01b2ca37f0b9dcd70c4c5ce208d328933f3392a9"
       }
     },
     {
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "e6f3d54be015a394b6ab5a25903ec09062a2b424"
+        "sha": "b891fb474173f810051a7fdb0d66915e0a9bc82f"
       }
     }
   ]
