@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [5.3.0](https://www.github.com/googleapis/node-gtoken/compare/v5.2.1...v5.3.0) (2021-06-10)
+
+
+### Features
+
+* add `gcf-owl-bot[bot]` to `ignoreAuthors` ([#369](https://www.github.com/googleapis/node-gtoken/issues/369)) ([3142215](https://www.github.com/googleapis/node-gtoken/commit/3142215277ae2daa33f7fb3300f09ef438ded01f))
+
 ### [5.2.1](https://www.github.com/googleapis/node-gtoken/compare/v5.2.0...v5.2.1) (2021-01-26)
 
 
