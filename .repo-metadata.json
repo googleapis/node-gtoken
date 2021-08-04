@@ -5,5 +5,5 @@
   "language": "nodejs",
   "repo": "googleapis/node-gtoken",
   "distribution_name": "gtoken",
-  "client_documentation": "https://googleapis.dev/nodejs/gtoken/latest"
+  "client_documentation": "https://cloud.google.com/nodejs/docs/reference/gtoken/latest"
 }
