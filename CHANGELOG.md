@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [5.3.1](https://www.github.com/googleapis/node-gtoken/compare/v5.3.0...v5.3.1) (2021-08-11)
+
+
+### Bug Fixes
+
+* **build:** migrate to using main branch ([#392](https://www.github.com/googleapis/node-gtoken/issues/392)) ([992e3c5](https://www.github.com/googleapis/node-gtoken/commit/992e3c5e1520a376269b2476e5ce225f6ee96e2b))
+
 ## [5.3.0](https://www.github.com/googleapis/node-gtoken/compare/v5.2.1...v5.3.0) (2021-06-10)
 
 
