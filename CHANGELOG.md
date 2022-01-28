@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+### [5.3.2](https://github.com/googleapis/node-gtoken/compare/v5.3.1...v5.3.2) (2022-01-28)
+
+
+### Bug Fixes
+
+* upgrade google-p12-pem to 3.1.3 ([#413](https://github.com/googleapis/node-gtoken/issues/413)) ([c3cebaf](https://github.com/googleapis/node-gtoken/commit/c3cebaf620c62f57385804fe5d852ce3e6398dc1))
+
 ### [5.3.1](https://www.github.com/googleapis/node-gtoken/compare/v5.3.0...v5.3.1) (2021-08-11)
 
 
