@@ -16,6 +16,7 @@ import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as fs from 'fs';
 import * as nock from 'nock';
+import {request} from 'gaxios';
 import {GoogleToken} from '../src';
 
 const EMAIL = 'example@developer.gserviceaccount.com';
@@ -517,6 +518,27 @@ describe('.getToken()', () => {
         scope.done();
         assert.strictEqual(err, null);
         assert.strictEqual(token!.access_token, fakeToken);
+        done();
+      });
+    });
+
+    it('should use a custom transporter if one is provided', done => {
+      let customTransporterWasUsed = false;
+      const gtoken = new GoogleToken({
+        ...TESTDATA,
+        transporter: {
+          request: opts => {
+            customTransporterWasUsed = true;
+            return request(opts);
+          },
+        },
+      });
+      const fakeToken = 'nodeftw';
+      const scope = createGetTokenMock(200, {access_token: fakeToken});
+      gtoken.getToken((err, token) => {
+        scope.done();
+        assert.strictEqual(err, null);
+        assert(customTransporterWasUsed);
         done();
       });
     });
