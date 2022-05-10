@@ -4,6 +4,17 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [6.0.0](https://github.com/googleapis/node-gtoken/compare/v5.3.2...v6.0.0) (2022-05-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* update library to use Node 12 (#428)
+
+### Build System
+
+* update library to use Node 12 ([#428](https://github.com/googleapis/node-gtoken/issues/428)) ([288b662](https://github.com/googleapis/node-gtoken/commit/288b662d990ce53a6824ddc67c384253487fdc04))
+
 ### [5.3.2](https://github.com/googleapis/node-gtoken/compare/v5.3.1...v5.3.2) (2022-01-28)
 
 
