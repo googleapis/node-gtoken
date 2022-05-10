@@ -246,7 +246,7 @@ describe('.revokeToken()', () => {
     } catch (e) {
       err = e;
     }
-    assert(err && err.message);
+    assert(err && (err as Error).message);
   });
 });
 
@@ -603,7 +603,7 @@ describe('.getToken()', () => {
       const gtoken = new GoogleToken(TESTDATA_KEYFILEJSON);
       await gtoken.getCredentials(KEYFILEJSON);
     } catch (err) {
-      message = err.message;
+      message = (err as Error).message;
     }
     assert.strictEqual(message, 'use key rather than keyFile.');
   });
