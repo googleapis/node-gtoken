@@ -6,7 +6,7 @@
  */
 
 import * as fs from 'fs';
-import {request} from 'gaxios';
+import {GaxiosError, request} from 'gaxios';
 import * as jws from 'jws';
 import * as path from 'path';
 import {promisify} from 'util';
@@ -339,12 +339,15 @@ export class GoogleToken {
     } catch (e) {
       this.rawToken = undefined;
       this.tokenExpires = undefined;
-      const body = e.response && e.response.data ? e.response.data : {};
+      const body =
+        (e as GaxiosError).response && (e as GaxiosError).response?.data
+          ? (e as GaxiosError).response?.data
+          : {};
       if (body.error) {
         const desc = body.error_description
           ? `: ${body.error_description}`
           : '';
-        e.message = `${body.error}${desc}`;
+        (e as GaxiosError).message = `${body.error}${desc}`;
       }
       throw e;
     }
