@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [6.0.1](https://github.com/googleapis/node-gtoken/compare/v6.0.0...v6.0.1) (2022-06-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency google-p12-pem to v4 ([#430](https://github.com/googleapis/node-gtoken/issues/430)) ([bd0848b](https://github.com/googleapis/node-gtoken/commit/bd0848b15554742e2fd73b05073bd84e1aec2a3f))
+
 ## [6.0.0](https://github.com/googleapis/node-gtoken/compare/v5.3.2...v6.0.0) (2022-05-10)
 
 
