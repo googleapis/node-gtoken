@@ -1,6 +1,6 @@
 {
   "name": "gtoken",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "Node.js Google Authentication Service Account Tokens",
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
