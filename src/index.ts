@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as fs from 'fs';
-import {GaxiosError, request} from 'gaxios';
+import {GaxiosOptions, GaxiosPromise, request, GaxiosError} from 'gaxios';
 import * as jws from 'jws';
 import * as path from 'path';
 import {promisify} from 'util';
@@ -31,6 +31,10 @@ const readFile = fs.readFile
 const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token';
 const GOOGLE_REVOKE_TOKEN_URL =
   'https://accounts.google.com/o/oauth2/revoke?token=';
+
+export interface Transporter {
+  request<T>(opts: GaxiosOptions): GaxiosPromise<T>;
+}
 
 export type GetTokenCallback = (err: Error | null, token?: TokenData) => void;
 
@@ -59,6 +63,7 @@ export interface TokenOptions {
   // milliseconds from expiring".
   // Defaults to 0
   eagerRefreshThresholdMillis?: number;
+  transporter?: Transporter;
 }
 
 export interface GetTokenOptions {
@@ -97,6 +102,9 @@ export class GoogleToken {
   email?: string;
   additionalClaims?: {};
   eagerRefreshThresholdMillis?: number;
+  transporter: Transporter = {
+    request: opts => request(opts),
+  };
 
   private inFlightRequest?: undefined | Promise<TokenData>;
 
@@ -274,7 +282,7 @@ export class GoogleToken {
       throw new Error('No token to revoke.');
     }
     const url = GOOGLE_REVOKE_TOKEN_URL + this.accessToken;
-    await request({url});
+    await this.transporter.request({url});
     this.configure({
       email: this.iss,
       sub: this.sub,
@@ -302,6 +310,9 @@ export class GoogleToken {
       this.scope = options.scope;
     }
     this.eagerRefreshThresholdMillis = options.eagerRefreshThresholdMillis;
+    if (options.transporter) {
+      this.transporter = options.transporter;
+    }
   }
 
   /**
@@ -327,7 +338,7 @@ export class GoogleToken {
       secret: this.key,
     });
     try {
-      const r = await request<TokenData>({
+      const r = await this.transporter.request<TokenData>({
         method: 'POST',
         url: GOOGLE_TOKEN_URL,
         data: {
