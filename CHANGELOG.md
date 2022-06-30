@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [6.1.0](https://github.com/googleapis/node-gtoken/compare/v6.0.1...v6.1.0) (2022-06-28)
+
+
+### Features
+
+* allow customizing the http client ([#426](https://github.com/googleapis/node-gtoken/issues/426)) ([408ad04](https://github.com/googleapis/node-gtoken/commit/408ad048a2595313717bf427fc34aa29a6e7fb3c))
+
 ## [6.0.1](https://github.com/googleapis/node-gtoken/compare/v6.0.0...v6.0.1) (2022-06-07)
 
 
