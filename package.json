@@ -39,7 +39,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "gaxios": "^4.0.0",
+    "gaxios": "^5.0.1",
     "google-p12-pem": "^4.0.0",
     "jws": "^4.0.0"
   },
