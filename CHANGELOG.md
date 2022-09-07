@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [6.1.2](https://github.com/googleapis/node-gtoken/compare/v6.1.1...v6.1.2) (2022-08-23)
+
+
+### Bug Fixes
+
+* remove pip install statements ([#1546](https://github.com/googleapis/node-gtoken/issues/1546)) ([#440](https://github.com/googleapis/node-gtoken/issues/440)) ([6fb8562](https://github.com/googleapis/node-gtoken/commit/6fb856207b07112096c033adb6d3f0edf5e5093d))
+
 ## [6.1.1](https://github.com/googleapis/node-gtoken/compare/v6.1.0...v6.1.1) (2022-08-04)
 
 
