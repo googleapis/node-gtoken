@@ -8,7 +8,7 @@
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import {GoogleToken} from '../src';
-import {copyFileSync} from 'fs';
+import {copyFileSync, readFileSync} from 'fs';
 
 // gtoken requires a file extension to determine key type:
 const keyFile = './key-file.json';
@@ -25,7 +25,7 @@ describe('gtoken system tests', () => {
   });
 
   it('should acquire an id token', async () => {
-    const keys = require(keyFile); // eslint-disable-line @typescript-eslint/no-var-requires
+    const keys = JSON.parse(readFileSync(keyFile, 'utf8'));
     const gtoken = new GoogleToken({
       keyFile,
       additionalClaims: {
