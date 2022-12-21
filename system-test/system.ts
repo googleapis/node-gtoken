@@ -8,11 +8,16 @@
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import {GoogleToken} from '../src';
+import {copyFileSync} from 'fs';
+
+// gtoken requires a file extension to determine key type:
+const keyFile = './key-file.json';
+copyFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS!, keyFile);
 
 describe('gtoken system tests', () => {
   it('should acquire an access token', async () => {
     const gtoken = new GoogleToken({
-      keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+      keyFile,
       scope: 'https://www.googleapis.com/auth/cloud-platform',
     });
     const token = await gtoken.getToken();
@@ -20,9 +25,9 @@ describe('gtoken system tests', () => {
   });
 
   it('should acquire an id token', async () => {
-    const keys = require(process.env.GOOGLE_APPLICATION_CREDENTIALS!); // eslint-disable-line @typescript-eslint/no-var-requires
+    const keys = require(keyFile); // eslint-disable-line @typescript-eslint/no-var-requires
     const gtoken = new GoogleToken({
-      keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+      keyFile,
       additionalClaims: {
         target_audience: keys.client_id,
       },
