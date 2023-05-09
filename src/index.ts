@@ -69,8 +69,6 @@ class ErrorWithCode extends Error {
   }
 }
 
-let getPem: ((filename: string) => Promise<string>) | undefined;
-
 export class GoogleToken {
   get accessToken() {
     return this.rawToken ? this.rawToken.access_token : undefined;
@@ -199,20 +197,16 @@ export class GoogleToken {
       }
       case '.p12':
       case '.pfx': {
-        // NOTE:  The loading of `google-p12-pem` is deferred for performance
-        // reasons.  The `node-forge` npm module in `google-p12-pem` adds a fair
-        // bit time to overall module loading, and is likely not frequently
-        // used.  In a future release, p12 support will be entirely removed.
-        if (!getPem) {
-          getPem = (await import('google-p12-pem')).getPem;
-        }
-        const privateKey = await getPem(keyFile);
-        return {privateKey};
+        throw new ErrorWithCode(
+          '*.p12 certificates are not supported. ' +
+            'Consider utilizing *.json format or converting *.p12 to *.pem using the OpenSSL CLI.',
+          'UNKNOWN_CERTIFICATE_TYPE'
+        );
       }
       default:
         throw new ErrorWithCode(
           'Unknown certificate type. Type is determined based on file extension. ' +
-            'Current supported extensions are *.json, *.pem, and *.p12.',
+            'Current supported extensions are *.json, and *.pem.',
           'UNKNOWN_CERTIFICATE_TYPE'
         );
     }
