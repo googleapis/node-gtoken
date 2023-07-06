@@ -22,12 +22,12 @@ npm install gtoken
 
 ## Usage
 
-### Use with a `.pem` or `.p12` key file:
+### Use with a `.pem` or `.json` key file:
 
 ``` js
 const { GoogleToken } = require('gtoken');
 const gtoken = new GoogleToken({
-  keyFile: 'path/to/key.pem', // or path to .p12 key file
+  keyFile: 'path/to/key.pem', // or path to .json key file
   email: 'my_service_account_email@developer.gserviceaccount.com',
   scope: ['https://scope1', 'https://scope2'], // or space-delimited string of scopes
   eagerRefreshThresholdMillis: 5 * 60 * 1000
@@ -103,7 +103,7 @@ const gtoken = new GoogleToken({
 - `options.email or options.iss`: The service account email address.
 - `options.scope`: An array of scope strings or space-delimited string of scopes.
 - `options.sub`: The email address of the user requesting delegated access.
-- `options.keyFile`: The filename of `.json` key, `.pem` key or `.p12` key.
+- `options.keyFile`: The filename of `.json` key or `.pem` key.
 - `options.key`: The raw RSA private key value, in place of using `options.keyFile`.
 - `options.additionalClaims`: Additional claims to include in the JWT when requesting a token.
 - `options.eagerRefreshThresholdMillis`: How long must a token be valid for in order to return it from the cache. Defaults to 0.
@@ -155,15 +155,15 @@ await gtoken.revokeToken();
 console.log('Token revoked!');
 ```
 
-## Downloading your private `.p12` key from Google
+## Downloading your private `.json` key from Google
 
 1. Open the [Google Developer Console][gdevconsole].
 2. Open your project and under "APIs & auth", click Credentials.
-3. Generate a new `.p12` key and download it into your project.
+3. Generate a new `.json` key and download it into your project.
 
 ## Converting your `.p12` key to a `.pem` key
 
-You can just specify your `.p12` file (with `.p12` extension) as the `keyFile` and it will automatically be converted to a `.pem` on the fly, however this results in a slight performance hit. If you'd like to convert to a `.pem` for use later, use OpenSSL if you have it installed.
+If you'd like to convert to a `.pem` for use later, use OpenSSL if you have it installed.
 
 ``` sh
 $ openssl pkcs12 -in key.p12 -nodes -nocerts > key.pem
