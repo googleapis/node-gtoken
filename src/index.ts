@@ -198,7 +198,7 @@ export class GoogleToken {
       case '.p12':
       case '.pfx': {
         throw new ErrorWithCode(
-          '*.p12 certificates are not supported. ' +
+          '*.p12 certificates are not supported after v6.1.2. ' +
             'Consider utilizing *.json format or converting *.p12 to *.pem using the OpenSSL CLI.',
           'UNKNOWN_CERTIFICATE_TYPE'
         );
