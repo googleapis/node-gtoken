@@ -15,7 +15,6 @@ import {GoogleToken} from '../src';
 const EMAIL = 'example@developer.gserviceaccount.com';
 const UNKNOWN_KEYFILE = './test/assets/key';
 const KEYFILE = './test/assets/key.pem';
-const P12FILE = './test/assets/key.p12';
 const KEYFILEJSON = './test/assets/key.json';
 const KEYFILENOEMAILJSON = './test/assets/key-no-email.json';
 const KEYCONTENTS = fs.readFileSync(KEYFILE, 'utf8');
@@ -57,17 +56,6 @@ const TESTDATA_KEYFILEJSON = {
 const TESTDATA_KEYFILENOEMAILJSON = {
   scope: 'scope123', // or space-delimited string of scopes
   keyFile: KEYFILENOEMAILJSON,
-};
-
-const TESTDATA_P12 = {
-  email: 'email@developer.gserviceaccount.com',
-  scope: 'scope123', // or space-delimited string of scopes
-  keyFile: P12FILE,
-};
-
-const TESTDATA_P12_NO_EMAIL = {
-  scope: 'scope123', // or space-delimited string of scopes
-  keyFile: P12FILE,
 };
 
 nock.disableNetConnect();
@@ -443,30 +431,6 @@ describe('.getToken()', () => {
       tokens.map(t => t.access_token).sort(),
       [fakeTokenA, fakeTokenB].sort()
     );
-  });
-
-  it('should run gp12pem if .p12 file is given', done => {
-    const gtoken = new GoogleToken(TESTDATA_P12);
-    const scope = createGetTokenMock();
-    gtoken.getToken((err, token) => {
-      scope.done();
-      assert.strictEqual(err, null);
-      done();
-    });
-  });
-
-  it('should return error if iss is not set with .p12', done => {
-    const gtoken = new GoogleToken(TESTDATA_P12_NO_EMAIL);
-    gtoken.getToken(err => {
-      assert(err);
-      if (err) {
-        assert.strictEqual(
-          (err as NodeJS.ErrnoException).code,
-          'MISSING_CREDENTIALS'
-        );
-        done();
-      }
-    });
   });
 
   it('should return error if unknown file type is used', done => {
