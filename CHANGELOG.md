@@ -4,6 +4,23 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [7.0.0](https://github.com/googleapis/node-gtoken/compare/v6.1.2...v7.0.0) (2023-07-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* move to node 14 as minimum version ([#457](https://github.com/googleapis/node-gtoken/issues/457))
+* remove support for conversion of *.p12 to *.pem ([#452](https://github.com/googleapis/node-gtoken/issues/452))
+
+### Features
+
+* Remove support for conversion of *.p12 to *.pem ([#452](https://github.com/googleapis/node-gtoken/issues/452)) ([522a96d](https://github.com/googleapis/node-gtoken/commit/522a96dd38ad5d486e9337f72efdf1a5523fded4))
+
+
+### Miscellaneous Chores
+
+* Move to node 14 as minimum version ([#457](https://github.com/googleapis/node-gtoken/issues/457)) ([429df81](https://github.com/googleapis/node-gtoken/commit/429df814cd4224d5eacce72cfe8e924e53cc7f30))
+
 ## [6.1.2](https://github.com/googleapis/node-gtoken/compare/v6.1.1...v6.1.2) (2022-08-23)
 
 
