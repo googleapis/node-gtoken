@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [7.0.1](https://github.com/googleapis/node-gtoken/compare/v7.0.0...v7.0.1) (2023-07-12)
+
+
+### Bug Fixes
+
+* **deps:** Update gaxios to 6.0.0 ([#462](https://github.com/googleapis/node-gtoken/issues/462)) ([c05a2b3](https://github.com/googleapis/node-gtoken/commit/c05a2b35d1bb369fc54f80784d9361c0d6cbc2e7))
+
 ## [7.0.0](https://github.com/googleapis/node-gtoken/compare/v6.1.2...v7.0.0) (2023-07-11)
 
 
