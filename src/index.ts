@@ -21,9 +21,9 @@ const readFile = fs.readFile
       );
     };
 
-const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token';
+const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_REVOKE_TOKEN_URL =
-  'https://accounts.google.com/o/oauth2/revoke?token=';
+  'https://oauth2.googleapis.com/token/revoke?token=';
 
 export interface Transporter {
   request<T>(opts: GaxiosOptions): GaxiosPromise<T>;
