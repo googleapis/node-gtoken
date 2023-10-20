@@ -22,7 +22,7 @@ const KEYJSONCONTENTS = fs.readFileSync(KEYFILEJSON, 'utf8');
 const GOOGLE_TOKEN_URLS = ['https://oauth2.googleapis.com', '/token'];
 const GOOGLE_REVOKE_TOKEN_URLS = [
   'https://oauth2.googleapis.com',
-  '/token/revoke',
+  '/revoke',
   '?token=',
 ];
 

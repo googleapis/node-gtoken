@@ -22,8 +22,7 @@ const readFile = fs.readFile
     };
 
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
-const GOOGLE_REVOKE_TOKEN_URL =
-  'https://oauth2.googleapis.com/token/revoke?token=';
+const GOOGLE_REVOKE_TOKEN_URL = 'https://oauth2.googleapis.com/revoke?token=';
 
 export interface Transporter {
   request<T>(opts: GaxiosOptions): GaxiosPromise<T>;
