@@ -100,7 +100,7 @@ export class GoogleToken {
     request: opts => request(opts),
   };
 
-  private inFlightRequest?: undefined | Promise<TokenData>;
+  #inFlightRequest?: undefined | Promise<TokenData>;
 
   /**
    * Create a GoogleToken.
@@ -108,7 +108,7 @@ export class GoogleToken {
    * @param options  Configuration object.
    */
   constructor(options?: TokenOptions) {
-    this.configure(options);
+    this.#configure(options);
   }
 
   /**
@@ -164,11 +164,11 @@ export class GoogleToken {
 
     if (callback) {
       const cb = callback as GetTokenCallback;
-      this.getTokenAsync(opts).then(t => cb(null, t), callback);
+      this.#getTokenAsync(opts).then(t => cb(null, t), callback);
       return;
     }
 
-    return this.getTokenAsync(opts);
+    return this.#getTokenAsync(opts);
   }
 
   /**
@@ -215,18 +215,19 @@ export class GoogleToken {
     }
   }
 
-  private async getTokenAsync(opts: GetTokenOptions): Promise<TokenData> {
-    if (this.inFlightRequest && !opts.forceRefresh) {
-      return this.inFlightRequest;
+  async #getTokenAsync(opts: GetTokenOptions): Promise<TokenData> {
+    if (this.#inFlightRequest && !opts.forceRefresh) {
+      return this.#inFlightRequest;
     }
 
     try {
-      return await (this.inFlightRequest = this.getTokenAsyncInner(opts));
+      return await (this.#inFlightRequest = this.#getTokenAsyncInner(opts));
     } finally {
-      this.inFlightRequest = undefined;
+      this.#inFlightRequest = undefined;
     }
   }
-  private async getTokenAsyncInner(opts: GetTokenOptions): Promise<TokenData> {
+
+  async #getTokenAsyncInner(opts: GetTokenOptions): Promise<TokenData> {
     if (this.isTokenExpiring() === false && opts.forceRefresh === false) {
       return Promise.resolve(this.rawToken!);
     }
@@ -240,13 +241,13 @@ export class GoogleToken {
       this.key = creds.privateKey;
       this.iss = creds.clientEmail || this.iss;
       if (!creds.clientEmail) {
-        this.ensureEmail();
+        this.#ensureEmail();
       }
     }
-    return this.requestToken();
+    return this.#requestToken();
   }
 
-  private ensureEmail() {
+  #ensureEmail() {
     if (!this.iss) {
       throw new ErrorWithCode('email is required.', 'MISSING_CREDENTIALS');
     }
@@ -261,13 +262,13 @@ export class GoogleToken {
   revokeToken(callback: (err?: Error) => void): void;
   revokeToken(callback?: (err?: Error) => void): void | Promise<void> {
     if (callback) {
-      this.revokeTokenAsync().then(() => callback(), callback);
+      this.#revokeTokenAsync().then(() => callback(), callback);
       return;
     }
-    return this.revokeTokenAsync();
+    return this.#revokeTokenAsync();
   }
 
-  private async revokeTokenAsync() {
+  async #revokeTokenAsync() {
     if (!this.accessToken) {
       throw new Error('No token to revoke.');
     }
@@ -276,7 +277,8 @@ export class GoogleToken {
       url,
       retry: true,
     });
-    this.configure({
+
+    this.#configure({
       email: this.iss,
       sub: this.sub,
       key: this.key,
@@ -290,7 +292,7 @@ export class GoogleToken {
    * Configure the GoogleToken for re-use.
    * @param  {object} options Configuration object.
    */
-  private configure(options: TokenOptions = {}) {
+  #configure(options: TokenOptions = {}) {
     this.keyFile = options.keyFile;
     this.key = options.key;
     this.rawToken = undefined;
@@ -311,7 +313,7 @@ export class GoogleToken {
   /**
    * Request the token from Google.
    */
-  private async requestToken(): Promise<TokenData> {
+  async #requestToken(): Promise<TokenData> {
     const iat = Math.floor(new Date().getTime() / 1000);
     const additionalClaims = this.additionalClaims || {};
     const payload = Object.assign(
