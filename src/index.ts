@@ -272,7 +272,10 @@ export class GoogleToken {
       throw new Error('No token to revoke.');
     }
     const url = GOOGLE_REVOKE_TOKEN_URL + this.accessToken;
-    await this.transporter.request({url});
+    await this.transporter.request({
+      url,
+      retry: true,
+    });
     this.configure({
       email: this.iss,
       sub: this.sub,
@@ -337,6 +340,9 @@ export class GoogleToken {
         },
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         responseType: 'json',
+        retryConfig: {
+          httpMethodsToRetry: ['POST'],
+        },
       });
       this.rawToken = r.data;
       this.expiresAt =
