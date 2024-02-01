@@ -479,7 +479,7 @@ describe('.getToken()', () => {
       });
     });
 
-    it.skip('should retry on error', async () => {
+    it('should retry on error', async () => {
       const gtoken = new GoogleToken(TESTDATA);
       const fakeToken = 'token';
 
