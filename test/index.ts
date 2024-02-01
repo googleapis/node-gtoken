@@ -479,6 +479,26 @@ describe('.getToken()', () => {
       });
     });
 
+    it('should retry on error', async () => {
+      const gtoken = new GoogleToken(TESTDATA);
+      const fakeToken = 'token';
+
+      const scopes = [
+        nock(GOOGLE_TOKEN_URLS[0])
+          .post(GOOGLE_TOKEN_URLS[1])
+          .replyWithError({code: 'ECONNRESET'}),
+        createGetTokenMock(200, {access_token: fakeToken}),
+      ];
+
+      const token = await gtoken.getToken();
+
+      assert.strictEqual(token.access_token, fakeToken);
+
+      for (const scope of scopes) {
+        scope.done();
+      }
+    });
+
     it('should use a custom transporter if one is provided', done => {
       let customTransporterWasUsed = false;
       const gtoken = new GoogleToken({
@@ -526,8 +546,8 @@ describe('.getToken()', () => {
     it('should set and return correct properties on error', done => {
       const ERROR = 'An error occurred.';
       const gtoken = new GoogleToken(TESTDATA);
-      const scope = createGetTokenMock(500, {error: ERROR});
-      gtoken.getToken((err, token) => {
+      const scope = createGetTokenMock(400, {error: ERROR});
+      gtoken.getToken(err => {
         scope.done();
         assert(err);
         assert.strictEqual(gtoken.rawToken, undefined);
@@ -543,8 +563,8 @@ describe('.getToken()', () => {
       const ERROR = 'error_name';
       const DESCRIPTION = 'more detailed message';
       const RESPBODY = {error: ERROR, error_description: DESCRIPTION};
-      const scope = createGetTokenMock(500, RESPBODY);
-      gtoken.getToken((err, token) => {
+      const scope = createGetTokenMock(400, RESPBODY);
+      gtoken.getToken(err => {
         scope.done();
         assert(err instanceof Error);
         if (err) {
