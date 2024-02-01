@@ -277,7 +277,7 @@ export class GoogleToken {
       url,
       retry: true,
     });
-    
+
     this.#configure({
       email: this.iss,
       sub: this.sub,
