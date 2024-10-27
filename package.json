@@ -59,7 +59,7 @@
   "license": "MIT",
   "dependencies": {
     "gaxios": "^7.0.0-rc.1",
-    "jws": "^4.0.0"
+    "jose": "^5.9.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.0",
