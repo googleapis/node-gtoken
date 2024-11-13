@@ -6,6 +6,3 @@ docs/
 protos/
 samples/generated/
 system-test/**/fixtures
-**/*.d.ts
-*.d.ts
-**/**.d.ts
