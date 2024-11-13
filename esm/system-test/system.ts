@@ -7,7 +7,7 @@
 
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
-import {GoogleToken} from '../src';
+import {GoogleToken} from '../src/index.js';
 import {copyFileSync, readFileSync} from 'fs';
 
 // gtoken requires a file extension to determine key type:
