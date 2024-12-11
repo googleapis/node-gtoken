@@ -14,7 +14,7 @@
   "source": {
     "excludePattern": "(^|\\/|\\\\)[._]",
     "include": [
-      "build/esm/src",
+      "build/esm/src"
     ],
     "includePattern": "\\.js$"
   },
