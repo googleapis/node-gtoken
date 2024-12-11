@@ -14,4 +14,4 @@
 
 import synthtool.languages.node as node
 
-node.owlbot_main(templates_excludes=["LICENSE", "README.md", ".github/ISSUE_TEMPLATE", ".github/scripts", ".github/workflows/issues-no-repro.yaml"])
+node.owlbot_main(templates_excludes=["LICENSE", "README.md", ".github/ISSUE_TEMPLATE", ".github/scripts", ".github/workflows/issues-no-repro.yaml", ".prettierrc.js", ".mocharc.js", ".eslintignore"])
