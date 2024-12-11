@@ -4,6 +4,23 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [8.0.0](https://github.com/googleapis/node-gtoken/compare/v7.1.0...v8.0.0) (2024-12-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* publish in dual format ([#497](https://github.com/googleapis/node-gtoken/issues/497))
+* migrate to Node 18 ([#496](https://github.com/googleapis/node-gtoken/issues/496))
+
+### Features
+
+* Publish in dual format ([#497](https://github.com/googleapis/node-gtoken/issues/497)) ([a81bde8](https://github.com/googleapis/node-gtoken/commit/a81bde87f3796af2052fe2942bc7cdfa925e3c3d))
+
+
+### Miscellaneous Chores
+
+* Migrate to Node 18 ([#496](https://github.com/googleapis/node-gtoken/issues/496)) ([7ece46d](https://github.com/googleapis/node-gtoken/commit/7ece46d2727b64ad174eb2fd752a3865089651cc))
+
 ## [7.1.0](https://github.com/googleapis/node-gtoken/compare/v7.0.1...v7.1.0) (2024-02-01)
 
 
