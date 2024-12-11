@@ -144,7 +144,7 @@ describe('.isTokenExpiring()', () => {
     gtoken.expiresAt = new Date().getTime() + 1000;
     assert.ok(
       !gtoken.isTokenExpiring(),
-      'should not be expired with future date'
+      'should not be expired with future date',
     );
     gtoken.expiresAt = new Date().getTime() - 1000;
     assert.ok(gtoken.isTokenExpiring(), 'should be expired with past date');
@@ -162,12 +162,12 @@ describe('.isTokenExpiring()', () => {
     gtoken.expiresAt = new Date().getTime() + 4 * 60 * 1000;
     assert.ok(
       gtoken.isTokenExpiring(),
-      'should be expired with near future date'
+      'should be expired with near future date',
     );
     gtoken.expiresAt = new Date().getTime() + 6 * 60 * 1000;
     assert.ok(
       !gtoken.isTokenExpiring(),
-      'shouldnt be expired with future date'
+      'shouldnt be expired with future date',
     );
     gtoken.expiresAt = new Date().getTime() - 10000;
     assert.ok(gtoken.isTokenExpiring(), 'should be expired with past date');
@@ -282,7 +282,6 @@ describe('.getToken()', () => {
           (err as NodeJS.ErrnoException).code,
           'MISSING_CREDENTIALS',
         );
-        done();
       }
     });
     done();
@@ -330,7 +329,6 @@ describe('.getToken()', () => {
           (err as NodeJS.ErrnoException).code,
           'MISSING_CREDENTIALS',
         );
-        done();
       }
     });
     done();
@@ -454,7 +452,6 @@ describe('.getToken()', () => {
           (err as NodeJS.ErrnoException).code,
           'UNKNOWN_CERTIFICATE_TYPE',
         );
-        done();
       }
     });
     done();

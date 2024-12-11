@@ -25,7 +25,7 @@
     "test:cjs": "c8 mocha --timeout=5000 build/cjs/test",
     "test:esm": "c8 mocha build/esm/test --loader=esmock",
     "test": "npm run test:esm && npm run test:cjs",
-    "docs": "jsdoc -c .jsdoc.js",
+    "docs": "jsdoc -c .jsdoc.json",
     "predocs-test": "npm run docs",
     "prelint": "cd samples; npm link ../; npm install",
     "precompile": "rm -rf build",

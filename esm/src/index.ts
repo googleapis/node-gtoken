@@ -64,10 +64,7 @@ export interface GetTokenOptions {
 }
 
 class ErrorWithCode extends Error {
-  constructor(
-    message: string,
-    public code: string,
-  ) {
+  constructor(message: string, code: string) {
     super(message);
   }
 }
