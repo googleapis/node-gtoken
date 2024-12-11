@@ -5,7 +5,7 @@
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18"
   },
   "repository": "google/node-gtoken",
   "scripts": {
@@ -20,7 +20,6 @@
     "system-test": "mocha build/system-test",
     "samples-test": "cd samples/ && npm link ../ && npm test && cd ../",
     "docs": "jsdoc -c .jsdoc.js",
-    "predocs-test": "npm run docs",
     "predocs-test": "npm run docs",
     "prelint": "cd samples; npm link ../; npm install",
     "precompile": "gts clean"
@@ -39,25 +38,25 @@
   },
   "license": "MIT",
   "dependencies": {
-    "gaxios": "^6.0.0",
+    "gaxios": "^6.7.1",
     "jws": "^4.0.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-methods": "^7.18.6",
-    "cheerio": "1.0.0-rc.12",
-    "@types/jws": "^3.1.0",
-    "@types/mocha": "^9.0.0",
-    "@types/node": "^20.0.0",
-    "c8": "^9.0.0",
-    "gts": "^5.0.0",
-    "jsdoc": "^4.0.0",
+    "@types/jws": "^3.2.10",
+    "@types/mocha": "^10.0.9",
+    "@types/node": "^22.9.0",
+    "c8": "^10.1.2",
+    "cheerio": "^1.0.0",
+    "gts": "^6.0.2",
+    "jsdoc": "^4.0.4",
     "jsdoc-fresh": "^3.0.0",
     "jsdoc-region-tag": "^3.0.0",
-    "linkinator": "^3.0.0",
-    "mocha": "^9.2.2",
-    "nock": "^13.0.0",
-    "pdfmake": "0.2.12",
-    "typescript": "^5.1.6"
+    "linkinator": "^6.1.2",
+    "mocha": "^10.8.2",
+    "nock": "^13.5.6",
+    "pdfmake": "^0.2.15",
+    "typescript": "^5.6.3"
   },
   "files": [
     "build/src",
