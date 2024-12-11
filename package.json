@@ -72,6 +72,7 @@
     "babel-plugin-replace-import-extension": "^1.1.4",
     "c8": "^10.1.2",
     "esmock": "^2.6.9",
+    "gapic-tools": "^0.4.6",
     "gts": "^6.0.2",
     "jsdoc": "^4.0.4",
     "jsdoc-fresh": "^3.0.0",
