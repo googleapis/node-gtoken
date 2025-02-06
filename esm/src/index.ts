@@ -17,7 +17,7 @@ const readFile = fs.readFile
       // if running in the web-browser, fs.readFile may not have been shimmed.
       throw new ErrorWithCode(
         'use key rather than keyFile.',
-        'MISSING_CREDENTIALS',
+        'MISSING_CREDENTIALS'
       );
     };
 
@@ -63,7 +63,10 @@ export interface GetTokenOptions {
 }
 
 class ErrorWithCode extends Error {
-  constructor(message: string, code: string) {
+  constructor(
+    message: string,
+    public code: string
+  ) {
     super(message);
   }
 }
@@ -145,7 +148,7 @@ export class GoogleToken {
   getToken(callback: GetTokenCallback, opts?: GetTokenOptions): void;
   getToken(
     callback?: GetTokenCallback | GetTokenOptions,
-    opts = {} as GetTokenOptions,
+    opts = {} as GetTokenOptions
   ): void | Promise<TokenData> {
     if (typeof callback === 'object') {
       opts = callback as GetTokenOptions;
@@ -155,7 +158,7 @@ export class GoogleToken {
       {
         forceRefresh: false,
       },
-      opts,
+      opts
     );
 
     if (callback) {
@@ -183,7 +186,7 @@ export class GoogleToken {
         if (!privateKey || !clientEmail) {
           throw new ErrorWithCode(
             'private_key and client_email are required.',
-            'MISSING_CREDENTIALS',
+            'MISSING_CREDENTIALS'
           );
         }
         return {privateKey, clientEmail};
@@ -199,14 +202,14 @@ export class GoogleToken {
         throw new ErrorWithCode(
           '*.p12 certificates are not supported after v6.1.2. ' +
             'Consider utilizing *.json format or converting *.p12 to *.pem using the OpenSSL CLI.',
-          'UNKNOWN_CERTIFICATE_TYPE',
+          'UNKNOWN_CERTIFICATE_TYPE'
         );
       }
       default:
         throw new ErrorWithCode(
           'Unknown certificate type. Type is determined based on file extension. ' +
             'Current supported extensions are *.json, and *.pem.',
-          'UNKNOWN_CERTIFICATE_TYPE',
+          'UNKNOWN_CERTIFICATE_TYPE'
         );
     }
   }
@@ -321,7 +324,7 @@ export class GoogleToken {
         iat,
         sub: this.sub,
       },
-      additionalClaims,
+      additionalClaims
     );
     const signedJWT = jws.sign({
       header: {alg: 'RS256'},
