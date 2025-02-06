@@ -20,10 +20,10 @@ const KEYFILEJSON = 'esm/test/assets/key.json';
 const KEYFILENOEMAILJSON = 'esm/test/assets/key-no-email.json';
 const KEYCONTENTS = fs.readFileSync(KEYFILE, 'utf8');
 const KEYJSONCONTENTS = fs.readFileSync(KEYFILEJSON, 'utf8');
-const GOOGLE_TOKEN_URLS = ['https://www.googleapis.com', '/oauth2/v4/token'];
+const GOOGLE_TOKEN_URLS = ['https://oauth2.googleapis.com', '/token'];
 const GOOGLE_REVOKE_TOKEN_URLS = [
-  'https://accounts.google.com',
-  '/o/oauth2/revoke',
+  'https://oauth2.googleapis.com',
+  '/revoke',
   '?token=',
 ];
 
@@ -190,7 +190,7 @@ describe('.revokeToken()', () => {
     gtoken.rawToken = {
       access_token: token,
     };
-    gtoken.revokeToken(err => {
+    gtoken.revokeToken(() => {
       assert.strictEqual(gtoken.accessToken, undefined);
       scope.done();
       done();
@@ -258,7 +258,7 @@ describe('.getToken()', () => {
   it('should read .pem keyFile from file', done => {
     const gtoken = new GoogleToken(TESTDATA_KEYFILE);
     const scope = createGetTokenMock();
-    gtoken.getToken((err, token) => {
+    gtoken.getToken(() => {
       assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
       scope.done();
       done();
@@ -268,7 +268,7 @@ describe('.getToken()', () => {
   it('should read .pem keyFile from file async', async () => {
     const gtoken = new GoogleToken(TESTDATA_KEYFILE);
     const scope = createGetTokenMock();
-    const token = await gtoken.getToken();
+    await gtoken.getToken();
     scope.done();
     assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
   });
@@ -289,7 +289,7 @@ describe('.getToken()', () => {
 
   it('should return err if neither key nor keyfile are set', done => {
     const gtoken = new GoogleToken();
-    gtoken.getToken((err, token) => {
+    gtoken.getToken(err => {
       assert.ok(err);
       done();
     });
@@ -298,7 +298,7 @@ describe('.getToken()', () => {
   it('should read .json key from file', done => {
     const gtoken = new GoogleToken(TESTDATA_KEYFILEJSON);
     const scope = createGetTokenMock();
-    gtoken.getToken((err, token) => {
+    gtoken.getToken(err => {
       scope.done();
       assert.strictEqual(err, null);
       const parsed = JSON.parse(KEYJSONCONTENTS);
@@ -315,7 +315,7 @@ describe('.getToken()', () => {
     });
     const gtoken = new GoogleToken(opts);
     const scope = createGetTokenMock();
-    const token = await gtoken.getToken();
+    await gtoken.getToken();
     scope.done();
     assert.deepStrictEqual(gtoken.key, KEYCONTENTS);
   });
@@ -522,7 +522,7 @@ describe('.getToken()', () => {
       });
       const fakeToken = 'nodeftw';
       const scope = createGetTokenMock(200, {access_token: fakeToken});
-      gtoken.getToken((err, token) => {
+      gtoken.getToken(err => {
         scope.done();
         assert.strictEqual(err, null);
         assert.ok(customTransporterWasUsed);
@@ -588,7 +588,7 @@ describe('.getToken()', () => {
       const gtoken = new GoogleToken(TESTDATA);
       const message = 'Request failed with status code 404';
       const scope = createGetTokenMock(404);
-      gtoken.getToken((err, token) => {
+      gtoken.getToken(err => {
         scope.done();
         assert.ok(err instanceof Error);
         if (err) assert.strictEqual(err.message, message);
@@ -619,7 +619,6 @@ describe('.getToken()', () => {
     try {
       await new GoogleToken(TESTDATA_KEYFILEJSON).getCredentials(KEYFILEJSON);
     } catch (err) {
-      console.log(err);
       message = (err as Error).message;
     }
     assert.strictEqual(message, 'use key rather than keyFile.');
