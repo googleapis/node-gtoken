@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/gtoken?activeTab=versions
 
+## [7.1.0](https://github.com/googleapis/node-gtoken/compare/v7.0.1...v7.1.0) (2024-02-01)
+
+
+### Features
+
+* Enable Token Retries ([#481](https://github.com/googleapis/node-gtoken/issues/481)) ([ed9f91e](https://github.com/googleapis/node-gtoken/commit/ed9f91e4764744426de95fd2510b68ee53677514))
+
 ## [7.0.1](https://github.com/googleapis/node-gtoken/compare/v7.0.0...v7.0.1) (2023-07-12)
 
 

@@ -17,7 +17,7 @@ const readFile = fs.readFile
       // if running in the web-browser, fs.readFile may not have been shimmed.
       throw new ErrorWithCode(
         'use key rather than keyFile.',
-        'MISSING_CREDENTIALS'
+        'MISSING_CREDENTIALS',
       );
     };
 
@@ -63,10 +63,7 @@ export interface GetTokenOptions {
 }
 
 class ErrorWithCode extends Error {
-  constructor(
-    message: string,
-    public code: string
-  ) {
+  constructor(message: string, code: string) {
     super(message);
   }
 }
@@ -99,7 +96,7 @@ export class GoogleToken {
     request: opts => request(opts),
   };
 
-  private inFlightRequest?: undefined | Promise<TokenData>;
+  #inFlightRequest?: undefined | Promise<TokenData>;
 
   /**
    * Create a GoogleToken.
@@ -107,7 +104,7 @@ export class GoogleToken {
    * @param options  Configuration object.
    */
   constructor(options?: TokenOptions) {
-    this.configure(options);
+    this.#configure(options);
   }
 
   /**
@@ -148,7 +145,7 @@ export class GoogleToken {
   getToken(callback: GetTokenCallback, opts?: GetTokenOptions): void;
   getToken(
     callback?: GetTokenCallback | GetTokenOptions,
-    opts = {} as GetTokenOptions
+    opts = {} as GetTokenOptions,
   ): void | Promise<TokenData> {
     if (typeof callback === 'object') {
       opts = callback as GetTokenOptions;
@@ -158,16 +155,16 @@ export class GoogleToken {
       {
         forceRefresh: false,
       },
-      opts
+      opts,
     );
 
     if (callback) {
       const cb = callback as GetTokenCallback;
-      this.getTokenAsync(opts).then(t => cb(null, t), callback);
+      this.#getTokenAsync(opts).then(t => cb(null, t), callback);
       return;
     }
 
-    return this.getTokenAsync(opts);
+    return this.#getTokenAsync(opts);
   }
 
   /**
@@ -186,7 +183,7 @@ export class GoogleToken {
         if (!privateKey || !clientEmail) {
           throw new ErrorWithCode(
             'private_key and client_email are required.',
-            'MISSING_CREDENTIALS'
+            'MISSING_CREDENTIALS',
           );
         }
         return {privateKey, clientEmail};
@@ -202,30 +199,31 @@ export class GoogleToken {
         throw new ErrorWithCode(
           '*.p12 certificates are not supported after v6.1.2. ' +
             'Consider utilizing *.json format or converting *.p12 to *.pem using the OpenSSL CLI.',
-          'UNKNOWN_CERTIFICATE_TYPE'
+          'UNKNOWN_CERTIFICATE_TYPE',
         );
       }
       default:
         throw new ErrorWithCode(
           'Unknown certificate type. Type is determined based on file extension. ' +
             'Current supported extensions are *.json, and *.pem.',
-          'UNKNOWN_CERTIFICATE_TYPE'
+          'UNKNOWN_CERTIFICATE_TYPE',
         );
     }
   }
 
-  private async getTokenAsync(opts: GetTokenOptions): Promise<TokenData> {
-    if (this.inFlightRequest && !opts.forceRefresh) {
-      return this.inFlightRequest;
+  async #getTokenAsync(opts: GetTokenOptions): Promise<TokenData> {
+    if (this.#inFlightRequest && !opts.forceRefresh) {
+      return this.#inFlightRequest;
     }
 
     try {
-      return await (this.inFlightRequest = this.getTokenAsyncInner(opts));
+      return await (this.#inFlightRequest = this.#getTokenAsyncInner(opts));
     } finally {
-      this.inFlightRequest = undefined;
+      this.#inFlightRequest = undefined;
     }
   }
-  private async getTokenAsyncInner(opts: GetTokenOptions): Promise<TokenData> {
+
+  async #getTokenAsyncInner(opts: GetTokenOptions): Promise<TokenData> {
     if (this.isTokenExpiring() === false && opts.forceRefresh === false) {
       return Promise.resolve(this.rawToken!);
     }
@@ -239,13 +237,13 @@ export class GoogleToken {
       this.key = creds.privateKey;
       this.iss = creds.clientEmail || this.iss;
       if (!creds.clientEmail) {
-        this.ensureEmail();
+        this.#ensureEmail();
       }
     }
-    return this.requestToken();
+    return this.#requestToken();
   }
 
-  private ensureEmail() {
+  #ensureEmail() {
     if (!this.iss) {
       throw new ErrorWithCode('email is required.', 'MISSING_CREDENTIALS');
     }
@@ -260,19 +258,23 @@ export class GoogleToken {
   revokeToken(callback: (err?: Error) => void): void;
   revokeToken(callback?: (err?: Error) => void): void | Promise<void> {
     if (callback) {
-      this.revokeTokenAsync().then(() => callback(), callback);
+      this.#revokeTokenAsync().then(() => callback(), callback);
       return;
     }
-    return this.revokeTokenAsync();
+    return this.#revokeTokenAsync();
   }
 
-  private async revokeTokenAsync() {
+  async #revokeTokenAsync() {
     if (!this.accessToken) {
       throw new Error('No token to revoke.');
     }
     const url = GOOGLE_REVOKE_TOKEN_URL + this.accessToken;
-    await this.transporter.request({url});
-    this.configure({
+    await this.transporter.request({
+      url,
+      retry: true,
+    });
+
+    this.#configure({
       email: this.iss,
       sub: this.sub,
       key: this.key,
@@ -286,7 +288,7 @@ export class GoogleToken {
    * Configure the GoogleToken for re-use.
    * @param  {object} options Configuration object.
    */
-  private configure(options: TokenOptions = {}) {
+  #configure(options: TokenOptions = {}) {
     this.keyFile = options.keyFile;
     this.key = options.key;
     this.rawToken = undefined;
@@ -307,7 +309,7 @@ export class GoogleToken {
   /**
    * Request the token from Google.
    */
-  private async requestToken(): Promise<TokenData> {
+  async #requestToken(): Promise<TokenData> {
     const iat = Math.floor(new Date().getTime() / 1000);
     const additionalClaims = this.additionalClaims || {};
     const payload = Object.assign(
@@ -319,7 +321,7 @@ export class GoogleToken {
         iat,
         sub: this.sub,
       },
-      additionalClaims
+      additionalClaims,
     );
     const signedJWT = jws.sign({
       header: {alg: 'RS256'},
@@ -336,6 +338,9 @@ export class GoogleToken {
         },
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         responseType: 'json',
+        retryConfig: {
+          httpMethodsToRetry: ['POST'],
+        },
       });
       this.rawToken = r.data;
       this.expiresAt =

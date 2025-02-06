@@ -7,3 +7,7 @@ package-lock.json
 __pycache__
 .coverage
 docs/
+.DS_Store
+**/*.d.ts
+*.d.ts
+**/**.d.ts
