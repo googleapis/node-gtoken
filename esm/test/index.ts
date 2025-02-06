@@ -144,7 +144,7 @@ describe('.isTokenExpiring()', () => {
     gtoken.expiresAt = new Date().getTime() + 1000;
     assert.ok(
       !gtoken.isTokenExpiring(),
-      'should not be expired with future date'
+      'should not be expired with future date',
     );
     gtoken.expiresAt = new Date().getTime() - 1000;
     assert.ok(gtoken.isTokenExpiring(), 'should be expired with past date');
@@ -162,12 +162,12 @@ describe('.isTokenExpiring()', () => {
     gtoken.expiresAt = new Date().getTime() + 4 * 60 * 1000;
     assert.ok(
       gtoken.isTokenExpiring(),
-      'should be expired with near future date'
+      'should be expired with near future date',
     );
     gtoken.expiresAt = new Date().getTime() + 6 * 60 * 1000;
     assert.ok(
       !gtoken.isTokenExpiring(),
-      'shouldnt be expired with future date'
+      'shouldnt be expired with future date',
     );
     gtoken.expiresAt = new Date().getTime() - 10000;
     assert.ok(gtoken.isTokenExpiring(), 'should be expired with past date');
@@ -280,7 +280,7 @@ describe('.getToken()', () => {
       if (err) {
         assert.strictEqual(
           (err as NodeJS.ErrnoException).code,
-          'MISSING_CREDENTIALS'
+          'MISSING_CREDENTIALS',
         );
       }
     });
@@ -327,7 +327,7 @@ describe('.getToken()', () => {
       if (err) {
         assert.strictEqual(
           (err as NodeJS.ErrnoException).code,
-          'MISSING_CREDENTIALS'
+          'MISSING_CREDENTIALS',
         );
       }
     });
@@ -389,7 +389,7 @@ describe('.getToken()', () => {
         scope.done();
         done();
       },
-      {forceRefresh: true}
+      {forceRefresh: true},
     );
   });
 
@@ -420,7 +420,7 @@ describe('.getToken()', () => {
     const tokens = await Promise.all([gtoken.getToken(), gtoken.getToken()]);
     assert.deepStrictEqual(
       tokens.map(t => t.access_token),
-      [fakeToken, fakeToken]
+      [fakeToken, fakeToken],
     );
   });
   it('should make parallel requests if forceRefresh=true (promise)', async () => {
@@ -439,7 +439,7 @@ describe('.getToken()', () => {
     ]);
     assert.deepStrictEqual(
       tokens.map(t => t.access_token).sort(),
-      [fakeTokenA, fakeTokenB].sort()
+      [fakeTokenA, fakeTokenB].sort(),
     );
   });
 
@@ -450,7 +450,7 @@ describe('.getToken()', () => {
       if (err) {
         assert.strictEqual(
           (err as NodeJS.ErrnoException).code,
-          'UNKNOWN_CERTIFICATE_TYPE'
+          'UNKNOWN_CERTIFICATE_TYPE',
         );
       }
     });
@@ -634,7 +634,7 @@ function createGetTokenMock(code = 200, body?: {}) {
         grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
         assertion: /.?/,
       },
-      {reqheaders: {'Content-Type': 'application/x-www-form-urlencoded'}}
+      {reqheaders: {'Content-Type': 'application/x-www-form-urlencoded'}},
     )
     .reply(code, body);
 }
