@@ -619,7 +619,6 @@ describe('.getToken()', () => {
     try {
       await new GoogleToken(TESTDATA_KEYFILEJSON).getCredentials(KEYFILEJSON);
     } catch (err) {
-      console.log(err);
       message = (err as Error).message;
     }
     assert.strictEqual(message, 'use key rather than keyFile.');
