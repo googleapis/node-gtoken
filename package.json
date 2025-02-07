@@ -80,7 +80,7 @@
     "jsdoc-region-tag": "^3.0.0",
     "linkinator": "^6.1.2",
     "mocha": "^10.8.2",
-    "nock": "^13.5.6",
+    "nock": "^14.0.0",
     "pack-n-play": "^2.1.0",
     "pdfmake": "^0.2.15",
     "proxyquire": "^2.1.3",
