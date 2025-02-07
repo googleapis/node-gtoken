@@ -625,7 +625,7 @@ describe('.getToken()', () => {
   });
 });
 
-function createGetTokenMock(code = 200, body?: {}) {
+function createGetTokenMock(code = 200, body = {}) {
   return nock(GOOGLE_TOKEN_URLS[0])
     .replyContentLength()
     .post(

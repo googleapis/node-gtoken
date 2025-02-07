@@ -335,11 +335,10 @@ export class GoogleToken {
       const r = await this.transporter.request<TokenData>({
         method: 'POST',
         url: GOOGLE_TOKEN_URL,
-        data: {
+        data: new URLSearchParams({
           grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
           assertion: signedJWT,
-        },
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        }),
         responseType: 'json',
         retryConfig: {
           httpMethodsToRetry: ['POST'],
