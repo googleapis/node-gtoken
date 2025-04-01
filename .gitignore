@@ -11,3 +11,4 @@ docs/
 **/*.d.ts
 *.d.ts
 **/**.d.ts
+tsconfig.tsbuildinfo
